@@ -1,0 +1,166 @@
+\documentclass{book}
+
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+
+\usepackage{dsfont}
+
+\usepackage{ifxetex}
+\usepackage{ifpdf}
+
+\usepackage{xargs}
+\usepackage[pdftex,dvipsnames]{xcolor}
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+
+\vsize=27.9cm \hsize=21cm \setlength{\textwidth}{16cm}
+\setlength{\textheight}{21.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+%\setlength{\topmargin}{-1.5cm}
+\parskip 5pt
+
+%%%%%%%%%%%%% Packages %%%%%%%%%%%%%%%%%
+\usepackage{amssymb, amsthm,amsmath}
+\usepackage{bm}
+
+\ifpdf
+  \usepackage{graphicx}
+  \usepackage{hyperref}
+\else
+  \ifxetex
+    \usepackage{graphicx}
+    \usepackage{hyperref}
+  \else
+    \usepackage[dvipdfm]{graphicx}
+    \usepackage[dvipdfm]{hyperref}
+  \fi
+\fi
+
+\graphicspath{ {../imagenes/} }
+
+\usepackage{enumitem}
+\setenumerate[0]{label=(\alph*)}
+
+\usepackage{caption}
+\usepackage{soul, color}
+
+\usepackage{listings}
+\lstset{
+  frame=single,
+  breaklines=true,
+  basicstyle=\fontsize{7}{13}\selectfont\ttfamily
+}
+
+%%%%%%%%%%%% algo and keywords %%%%%%%
+\usepackage[ruled]{algorithm2e}
+\SetKw{KwGoto}{goto}
+\SetKwRepeat{OnError}{try}{on error}
+%%%%%%%%%%%% hyperref %%%%%%%
+\hypersetup{
+bookmarksnumbered=true,
+colorlinks=true,
+pdfstartview={FitH},
+linkcolor=blue
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand\sep{\,:\,}
+\newcommand{\vSpace}{\vspace{5mm}\noindent}
+\newcommand{\vSmall}{\vspace{3mm}\noindent}
+\newcommand\fakesection[1]{\noindent{\bf #1}\\}
+\newcommand\bs{\backslash}
+
+\input{../latex/preamble}
+
+%\newcommand\one{\mathds{1}}
+\newcommand\kk{\Bbbk}
+
+\newcommand\algno{\overline\Q}
+
+\newcommand\wo[1]{\backslash{\{#1\}}}
+\newcommand\spn[1]{\langle #1 \rangle}
+\newcommand{\ux}{\underline x}
+\newcommand\authortext[1]{\ifforauthor {\color{red}#1} \fi}
+\renewcommand\st{\mathrel{\ooalign{$\,\backepsilon$\cr\lower .7pt\hbox{\kern 1pt$-\,$}}}}
+\newcommand\bref[3][blue]{%
+  \begingroup%
+  \hypersetup{linkcolor=#1}%
+  \hyperlink{#2}{#3}%
+  \endgroup}
+
+
+
+
+%%%%%%%%%%%%%%% TITLE %%%%%%%%
+%\title{Template for TeX files}
+\title{}
+\date{}
+\thispagestyle{empty}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Teorema}[chapter]
+\newtheorem{definition}[theorem]{Definición}
+\newtheorem{conjecture}[theorem]{Conjectura}
+\newtheorem{lemma}[theorem]{Lema}
+\newtheorem{coro}[theorem]{Corolario}
+\newtheorem{corollary}[theorem]{Corolario}
+\newtheorem{proposition}[theorem]{Proposición}
+\newtheorem{prop}[theorem]{Proposición}
+
+\theoremstyle{definition}
+\newtheorem{exercise}[theorem]{Ejercicio}
+\newtheorem{ejercicio}[theorem]{Ejercicio}
+\newtheorem{problem}[theorem]{Problema}
+\newtheorem{example}[theorem]{Ejemplo}
+\newtheorem{remark}[theorem]{Observación}
+\newtheorem*{notation}{Notación}
+
+
+%%% free theorem styles
+\newcommand{\thistheoremname}{}
+\newtheorem{genericthm}[theorem]{\thistheoremname}
+\newenvironment{namedthm}[1]
+  {\renewcommand{\thistheoremname}{#1}%
+   \begin{genericthm}}
+  {\end{genericthm}}
+\newtheorem{none}[theorem]{}
+
+
+\title{Optimizaci\'on semidefinida}
+
+\author{Santiago Laplagne}
+%\address{Instituto de C\'alculo, FCEN, Universidad de Buenos Aires - Ciudad Universitaria,
+%Pabell\'on I - (C1428EGA) - Buenos Aires, Argentina}
+%\email{slaplagn@dm.uba.ar}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+%\include{chapterPreliminares}
+
+%\pagebreak
+
+\chapter*{Prefacio}
+Estas notas fueron elaboradas para el curso de Optimización Semidefinida dictado en el Segundo Cuatrimestre de 2021 en la Facultad de Ciencias Exactas y Naturales de la Universidad de Buenos Aires. La mayor parte del material en estas notas es traducción de otros textos, que se referencian al principio de la sección correspondiente. No hay ninguna intención de originalidad en estas notas sino que se presentan como una recopilación y traducción de material para facilitar la cursada a los alumnos y alumnas del curso.
+
+\include{chapter-programacionLineal}
+\include{chapter-introduccionSDP}
+\include{chapter-aplicaciones}
+\include{chapter-aplicaciones-distancia}
+\include{chapter-polinomios}
+\include{chapter-momentos}
+
+\bibliographystyle{apalike}
+\bibliography{../latex/optimizacion}
+
+\end{document}

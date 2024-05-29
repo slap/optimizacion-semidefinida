@@ -1,0 +1,710 @@
+\chapter{Introducci\'on a la programaci\'on semidefinida}
+
+\section{Motivación}
+Consideremos una sucesión de vectores definida recursivamente por
+$$
+x[k + 1] = A x[k], \quad x[0] = x_0
+$$
+
+Se puede ver que este sistema tiende a 0 para todo vector inicial si y solo todos los autovalores de $A$ tienen módulo menor que 1.
+En este caso entonces, para estudiar el comportamiento en el largo plazo del sistema, nos interesa conocer el máximo de los módulos de los autovectores de $A$, que llamamos \emph{radio espectral} de $A$.
+
+Dada una matriz $A$ con autovalores $\lambda_1, \dots, \lambda_n$, los autovalores de $A - \alpha I$ son $\lambda_1 - \alpha, \dots, \lambda_n - \alpha$. SI $A$ es simétrica, todos sus autovalores son reales, y podemos calcular su radio espectral calculando el mayor y menor autovalor.
+
+En este caso, podemos plantear el problema de hallar el menor autovalor como un problema de optimización:
+$$
+\min \{\lambda : \lambda \text{ autovalor de $A$}\} = \sup_{\alpha \in \R} \{\alpha : A - \alpha I \succeq 0\}
+$$
+y análogamente, podemos plantear el problema de hallar el mayor autovalor como
+$$
+\max \{\lambda : \lambda \text{ autovalor de $A$}\} = \inf_{\alpha \in \R} \{\alpha : \alpha I - A \succeq 0\}.
+$$
+
+Estudiaremos cómo resolver este tipo de problemas.
+
+\section{Preliminares}
+
+\subsection{Matrices simétricas}
+
+Notamos $\Sym^n$ al espacio de matrices simétricas
+$$
+\Sym^n = \{A \in \R^{n \times n} | a_{ij} = a_{ji}, \forall 1 \le i, j \le n\}.
+$$
+Es un subespacio vectorial de $\R^{n \times n}$ de dimensión $\frac{n(n+1)}{2}$.
+
+Una propiedad fundamental de las matrices simétricas es que todos los autovalores son reales, y poseen base ortonormal de autovectores.
+Este resultado se conoce como el teorema espectral.
+
+\begin{prop}
+Si $\Ab$ es simétrica, entonces
+\begin{enumerate}
+\item \label{item:realav} todos los autovalores de $\Ab$ son reales,
+\item autovectores correspondientes a autovalores distintos son perpendiculares,
+\item $\Sb^T \Ab \Sb$ es simétrica para toda $\Sb \in \Rnn$.
+\end{enumerate}
+\end{prop}
+
+\begin{proof}
+Ejercicio.
+\end{proof}
+
+\begin{theorem}
+Cualquier matriz simétrica $X \in \Symn$ admite una descomposición
+$$
+X = P D P^T,
+$$
+con $P \in \Rnn$ matriz ortogonal y $D \in \Rnn$ matriz diagonal, con los autovalores $\{\lambda_1, \dots, \lambda_n\} \subset \R$ de $X$ en la diagonal. Equivalentemente,
+$$
+X = \sum_{i=1}^n \lambda_i u_i u_i^T,
+$$
+con $u_i \in \R_n$, $1 \le i \le n$, los autovectores de $X$, que se corresponden con las columnas de $P$.
+\end{theorem}
+
+\begin{proof} Ver \cite[Teorema 4.1.5]{Horn1985}.
+\end{proof}
+
+\subsection{Matrices simétricas y ley de inercia}
+
+En el caso de matrices simétricas existe una diagonalización más simple que la diagonalización por matrices semejantes, que es especialmente útil en problemas de programación semidefinida.
+
+\begin{definition}
+Dos matrices $A, B \in \Rnn$ son \emph{congruentes} si existe una matrix $S \in \Rnn$ inversible tal que
+$$
+A = S B S^T.
+$$
+\end{definition}
+
+La relación de congruencia es una relación de equivalencia.
+
+Dada una matriz simétrica $\Ab \in \Symn$ definimos la \emph{inercia} de $\Ab$ como la terna $(n_+, n_-, n_0)$, donde $n_+$ la cantidad de autovalores positivos, $n_-$ la cantidad de autovalores negativos y $n_0$ es la cantidad de autovalores nulos de $\Ab$.
+
+Si $\Ab \in \Symn$, podemos escribir $\Ab = \Ub \Lambdab \Ub^T$ con $\Lambda = \diag(\lambda_1, \dots, \lambda_n)$, la matriz con los autovalores de $\Ab$ en la diagonal, y $\Ub$ unitaria. Suponemos que los autovalores positivos son los primeros, luego los autovalores negativos y finalmente los autovalores cero. Definiendo la matriz diagonal no-singular real
+$$\Db = \diag(\sqrt{\lambda_1}, \dots, \sqrt{\lambda_{n_+}}, \sqrt{-\lambda_{n_{+}+1}}, \dots, \sqrt{-\lambda_{n_{+}+n_{-}}}, 1, \dots, 1),$$
+obtenemos
+$$
+\Lambda = D \begin{pmatrix}
+1 &        &   &    &        &    &   &        &   \\
+  & \ddots &   &    &        &    &   &        &   \\
+  &        & 1 &    &        &    &   &        &   \\
+  &        &   & -1 &        &    &   &        &   \\
+  &        &   &    & \ddots &    &   &        &   \\
+  &        &   &    &        & -1 &   &        &   \\
+  &        &   &    &        &    & 0 &        &   \\
+  &        &   &    &        &    &   & \ddots &   \\
+  &        &   &    &        &    &   &        & 0 \\
+\end{pmatrix}
+D.$$
+
+Podemos escribir a la matriz $\Ab$ como
+$$
+\Ab = \Ub \Lambda \Ub^T = \Sb
+\begin{pmatrix}
+1 &        &   &    &        &    &   &        &   \\
+  & \ddots &   &    &        &    &   &        &   \\
+  &        & 1 &    &        &    &   &        &   \\
+  &        &   & -1 &        &    &   &        &   \\
+  &        &   &    & \ddots &    &   &        &   \\
+  &        &   &    &        & -1 &   &        &   \\
+  &        &   &    &        &    & 0 &        &   \\
+  &        &   &    &        &    &   & \ddots &   \\
+  &        &   &    &        &    &   &        & 0 \\
+\end{pmatrix}
+\Sb^T = S I(A) S^T,$$
+donde $\Sb = \Ub \Db$ es una matriz no-singular y $I(A)$ es la matriz de inercia de $\Ab$.
+
+Utilizando esta escritura, la ley de inercia nos permite determinar fácilmente si dos matrices simétricas son congruentes.
+
+\begin{theorem}
+Dos matrices simétricas $A, B \in \Symn$ son congruentes si y solo si tienen la misma signatura.
+\end{theorem}
+
+\begin{proof}
+Si dos matrices $\Ab, \Bb$ tienen la misma inercia, utilizando la construcción anterior, obtenemos que $\Ab$ y $\Bb$ son congruentes a la misma matriz de inercia. Como la relación de congruencia es una relación de equivalencia, las matrices $\Ab$ y $\Bb$ son congruentes.
+
+Para la otra implicación, suponemos $\Ab$ y $\Bb$ congruentes, con $\Ab = \Sb \Bb \Sb^T$, para alguna matriz no-singular $\Sb \in \Rnn$. Como las matrices congruentes tienen el mismo rango, $n_0(\Ab) = n_0(\Bb)$ y alcanza ver que $n_+(\Ab) = n_+(\Bb)$. Notamos $k = n_+(\Ab)$.
+
+Sean $\vb_1, \dots, \vb_k$ autovectores ortonormales de $\Ab$ correspondientes a los autovalores positivos $\lambda_1(\Ab), \dots, \lambda_{k}$ y sea $S_+(\Ab) = \langle \vb_1, \dots, \vb_{k} \rangle$.
+
+La dimensión de $S_+(\Ab)$ es $k$, y si
+$$\xb = \alpha_1 \vb_1 + \dots + \alpha_k \vb_{k} \neq 0,$$
+entonces
+$$\xb^T \Ab \xb = \lambda_1(A) |\alpha_1|^2 + \dots + \lambda_{k}(A) |\alpha_k|^2 > 0.$$
+
+Por lo tanto,
+$$
+\xb^T (\Sb \Bb \Sb^T) \xb = (\Sb^T\xb)^T \Bb (\Sb^T \xb) > 0,
+$$
+luego $\yb^T \Bb \yb > 0$ para todo vector no nulo $\yb \in \langle \Sb^T \vb_1, \dots, \Sb^T \vb_k \rangle$, que es un espacio de dimensión $k$. Por lo tanto, $n_+(\Bb) \ge k = n_+(\Ab)$ y realizando el mismo razonamiento intercambiando $\Ab$ por $\Bb$, obtenemos $n_+(\Ab) = n_+(\Bb)$.
+\end{proof}
+
+En particular, cualquier matriz simétrica es congruente a una matriz diagonal con valores $0$, $+1$ o $-1$ en la diagonal, y la cantidad de cada uno de estos valores en la diagonal es invariante, no depende de la matriz $\Sb$.
+
+Finalmente, notamos que dada una matriz simétrica $\Ab \in \Symn$ podemos obtener una matriz diagonal $\Db$ congruente a $\Ab$ por eliminación gaussiana (realizando simultáneamente eliminación en filas y columnas). Por lo tanto, podemos calcular eficientemente tanto la diagonalización por congruencia como la signatura de la matriz.
+
+
+\subsection{Matrices definidas positivas}
+
+Una matriz $A \in \R^{n \times n}$ se llama \emph{semidefinida positiva} si es simétrica y
+$$
+x^T A x  \ge 0
+$$
+para todo $x \in \R^n$. Si además $x^T A x = 0$ solo para $x = 0$, decimos que la matriz es \emph{definida positiva}.
+
+Si $A = M^T M$ para $M \in \R^{m \times n}$ cualquiera, entonces
+$$
+x^T A x = x^T M^T M x = \| Mx \|^2 \ge 0,
+$$
+lo que nos da un amplio stock de matrices positivas semidefinidas.
+
+Para el siguiente resultado, dado un conjunto $S \subset \{1, \dots, n\}$, definimos el menores principales asociado a $S$ como el determinante de la submatriz cuadrada  $A_{S,S}$ formada por las filas y columnas de $A$ con índices en $S$.
+SI $S = \{1, 2, \dots, k\}$, decimos que el menor asociado es un \emph{menor principal de cabeza}.
+
+\begin{theorem}
+  Si $A \in \Rnn$ es un matriz simétrica, las siguientes propiedades son equivalentes.
+  \begin{enumerate}
+  \item $A$ es semidefinida positiva ($x^T A x \ge 0$ para todo $x \in \R^n$),
+  \item $A = M^T M$ para alguna matriz $M \in \R^{n \times n}$,
+  \item todos los autovalores de $A$ son no-negativos,
+  \item \emph{todos} los menores principales de $A$ son no-negativos.
+  \end{enumerate}
+\end{theorem}
+
+Para matrices definidas positivas, obtenemos equivalencias similares.
+
+\begin{theorem}
+  Si $A \in \Rnn$ es un matriz simétrica, las siguientes propiedades son equivalentes.
+  \begin{enumerate}
+  \item $A$ es definida positiva ($x^T A x > 0$ para todo $x \in \R^n$),
+  \item \label{MTM} $A = M^T M$ para alguna matriz $M \in \R^{n \times n}$ no singular,
+  \item todos los autovalores de $A$ son positivos,
+  \item \label{menoresprincipales} todos los menores principales de $A$ son positivos,
+  \item el polinomio característico de $\Ab$ tiene signos alternados. Si $\chi_A(x) = x^n + a_{n-1} x^{n-1} + a_1 x + a_0$, entonces $a_i a_{i+1} < 0$ para todo $0 \le i \le {n-1}$ (definiendo $a_n = 1$).
+  \end{enumerate}
+\end{theorem}
+
+En el caso de matrices definidas positivas, podemos restringir la condición \ref{menoresprincipales} a considerar solo los menores principales de cabeza.
+
+En ambos casos, la condición $\ref{MTM}$ podemos restringirla a matrices triangulares inferiores. Recordemos que cualquier matriz $C \in \Rnn$ admite una descomposición $\Qb\Rb$ y puede escribirse como $\Cb = \Qb \Rb$ con $\Qb$ unitaria y $\Rb$ triangular superior del mismo rango que $\Cb$. Luego
+$$
+\Ab = \Cb^T \Cb = (\Qb \Rb)^T \Qb \Rb = \Rb^T \Qb^T \Qb \Rb = \Rb^T \Rb
+$$
+y tomando $\Lb = \Rb^T$, obtenemos $\Ab = \Lb \Lb^T$.
+
+Si $\Cb$ es no singular, podemos elegir $\Rb$ con todos los valores en la diagonal positivos (y la descomposición de esta forma es única).
+Esto prueba el siguiente corolario, que nos da la \emph{descomposición de Cholesky} de una matriz definida positiva.
+
+\begin{corollary}
+Una matriz $\Ab$ es definida positiva si y solo si existe una matriz trinagular inferior $\Lb \in \Rnn$ con valores positivos en la diagonal tal que $\Ab = \Lb \Lb^T$.
+\end{corollary}
+
+
+La siguiente propiedad será clave para estudiar la dualidad en programación semidefinida.
+
+\begin{theorem}\label{teo:traza}
+Una matriz $\Ab$ es semidefinida positiva si y solo si $\innerTrace{\Ab}{X} \ge 0$ para toda matriz $\Xb \in \Splus$.
+\end{theorem}
+
+\begin{proof}
+Si $\Ab \succeq 0$, entonces $\Ab = \Bb^T \Bb$ para alguna matriz $\Bb$ y por lo tanto,
+$$
+\innerTrace{\Ab}{\Xb} = \tr(\Ab\Xb) = \tr(\Bb^T \Bb \Xb) = \tr(\Bb \Xb \Bb^T).
+$$
+
+Como $\Xb \succeq 0$, también $\Bb \Xb \Bb^T \succeq 0$ y por lo tanto $\tr(\Bb \Xb \Bb^T) \ge 0$.
+
+Para la otra dirección, si $\xb \in \R^n$, entonces $\xb \xb^T \in \Rnn$ es una matriz semidefinida positiva. Si $\innerTrace{\Ab}{\Xb} \ge 0$ para toda $\Xb$, entonces $\innerTrace{\Ab}{\xb \xb^T}  \ge 0$ para todo $\xb \in \Rn$ y
+$$
+\innerTrace{\Ab}{\xb\xb^T} = \tr(\Ab \xb \xb^T) = \tr(\xb^T \Ab \xb) = \xb^T \Ab \xb
+$$
+y por lo tanto $\xb^T \Ab \xb \ge 0$ para todo $\xb$.
+\end{proof}
+
+\subsection{Conos}
+
+Referencia principal: [Sección 1.5, Laurent-Vallentin].
+
+Un subconjunto $\CC$ de un espacio vectorial real $V$ es un \emph{cono convexo} si es cerrado por combinaciones lineales positivas. Es decir,
+\begin{enumerate}
+\item Si $\xb \in \CC$ y $a \ge 0$, entonces $a\xb \in \CC$.
+\item Si $\xb, \yb \in \CC$, entonces $\xb + \yb \in \CC$.
+\end{enumerate}
+
+En este apunte siempre que hablemos de \emph{conos} vamos a referirnos a conos convexos.
+
+Decimos que un cono es \emph{puntiagudo} si
+$$
+\xb  \in \CC \text{ y } -\xb \in \CC \Rightarrow \xb = 0.
+$$
+
+El \emph{cono dual} de un cono $\CC$ es
+$$
+\CC^* = \{\yb \in \R^n \mid \xb^T \yb \ge 0 \enspace \forall \xb \in \CC\}.
+$$
+
+Dado un cono puntiagudo $\CC$ en $\R^n$, podemos definir un orden parcial en $\R^n$ por
+$$
+\xb \succeq \yb \iff \xb - \yb \in \CC
+$$
+para $\xb, \yb \in \R^n$. Este orden satisface las siguientes propiedades:
+\begin{itemize}
+\item \textbf{reflexividad:} $\forall \xb \in \R^n: \xb \succeq \xb$
+\item \textbf{antisimetría:} $\forall \xb, \yb \in \R^n: \xb \succeq \yb, \yb \succeq \xb \Rightarrow \xb = \yb$
+\item \textbf{transitividad:} $\forall \xb, \yb, z \in \R^n: \xb \succeq \yb, \yb \succeq \zb \Rightarrow \xb \succeq \zb$
+\item \textbf{homogeneidad:} $\forall \xb, \yb \in \R^n, \forall \alpha \in \R_{\ge 0}: \xb \succeq \yb \Rightarrow \alpha \xb \succeq \alpha \yb$
+\item \textbf{aditividad:} $\forall \xb, \yb, \xb', \yb' \in \R^n: \xb \succeq \yb, \xb' \succeq \yb' \Rightarrow \xb + \xb' \succeq \yb + \yb'$
+\end{itemize}
+
+En general, nos van a interesar conos convexos de dimensión completa, es decir conos con interior no vacío. En ese caso, podemos definir la desigualdad estricta
+$$
+\xb \succ \yb \iff \xb - \yb \in \interior \CC.
+$$
+
+Tenemos el siguiente resultado de separación.
+
+\begin{lemma} Sean $\CC \subset \R^n$ un cono convexo cerrado y $\xb \in \R^n \smallsetminus \CC$ un punto fuera de $\CC$. Existe un hiperplano que separa a $\{\xb\}$ de $\CC$. Más aún, existe un vector no nulo $c \in \R^n$ tal que
+$$
+\forall \yb \in \R^n : \inner{\cb}{\yb} \ge 0 > \inner{c}{\xb}.
+$$
+\end{lemma}
+
+\subsubsection{Ejemplos}
+
+\noindent\textbf{Cono generado por un conjunto de puntos.}
+El cono generado por un conjunto de puntos $A = \{\xb_1, \dots, \xb_N\} \subset \R^n$ es el menor cono que contiene a $A$. Es el cono
+$$
+\cone A = \left\{ \sum_{i=1}^N \alpha_i \xb_i \mid \alpha_1, \dots, \alpha_N \in \R_{\ge 0}\right\}.
+$$
+
+\noindent\textbf{El ortante no-negativo.}
+El ortante no-negativo que utilizamos en programación lineal, definido por
+$$
+\R^n_{\ge 0} = \{(x_1, \dots, x_n) \in \R^n \mid x_1, \dots, x_n \ge 0\}
+$$
+es un cono puntiagudo convexo cerrado de dimensión completa.
+
+\noindent\textbf{El cono de matrices semidefinidas positivas.}
+
+\begin{prop}
+El conjunto $\Splusn$ de matrices positivas semidefinidas es un cono convexo puntiagudo.
+\end{prop}
+
+\begin{proof}
+Podemos escribir a $\Splusn$ como intersección de infinitos semiespacios:
+$$
+\Splusn = \{\Ab \in \Symn \mid \xb^T \Ab \xb \ge 0 \enspace \forall \xb \in \R^n\} = \bigcap_{\xb\in\R^n} \{\Ab \in \Symn \mid \xb^T \Ab \xb \ge 0\},
+$$
+y por lo tanto es un conjunto convexo cerrado.
+Para ver que forman un cono, si $\Ab, \Bb \succeq 0$ y $a \ge 0$, es claro que $a \Ab \succeq 0$ y también que
+$$\xb^T (\Ab + \Bb) \xb = \xb^T \Ab \xb + \xb^T \Bb \xb \ge 0$$
+ para todo $\xb \in \R^n$.
+
+Finalmente, para ver que es un cono puntiagudo, si $\Ab \in \Splusn$ y $-\Ab \in \Splusn$, todos los autovalores de $\Ab$ son $0$. Como $\Ab$ es simétrica, el teorema espectral para matrices simétricas implica que $\Ab$ es la matriz nula.
+\end{proof}
+
+\begin{prop}
+El interior de cono $\Splusn$ de matrices semidefinidas positivas es $\Splusplusn$, el conjunto de matrices definidas positivas. En particular, $\Splusn$ es un cono de dimensión completa.
+\end{prop}
+
+\begin{proof}
+Ver \cite[Teorema 3.1]{Fawzi2018}.
+\end{proof}
+
+
+\subsection{Espectrahedros.} Generalizamos la noción de poliedros permitiendo desigualdades matriciales.
+
+\begin{definition}
+  Una desigualdad lineal matricial (LMI por su nombre en inglés) tiene la forma
+  $$\Ab_0 + \sum_{i = 1}^m \Ab_i y_i \succeq 0,$$
+  con $\Ab_i \in \Sym^n$ matrices simétricas dadas.
+\end{definition}
+
+Un conjunto de desigualdades matriciales definen un espectrahedro.
+
+\begin{definition}
+Un conjunto $S \subset \R^m$ es un espectrahedro si tiene la forma
+$$
+S = \left\{ (y_1, \dots, y_m) \in \R^m : \Ab_0 + \sum_{i = 1}^m \Ab_i y_i \succeq 0\right\},
+$$
+para matrices simétricas $\Ab_0, \Ab_1, \dots, \Ab_m \in \Sym^n$.
+\end{definition}
+
+\begin{example}
+Todos los poliedros son espectrahedros. En efecto, para una matriz $\Xb \in \Rnn$ diagonal, $\Xb \succeq 0$ si y solo $x_{ii} \ge 0$ para todo $1 \le i \le n$. Por lo tanto, podemos describir al poliedro $S = \{\xb: \Ab \xb \le \bb\}$ como
+$$
+S = \left\{ (x_1, \dots, x_n) \in \R^n : \begin{pmatrix} \inner{\ab_1}{\xb} - b_1 & & \\ & \ddots & \\ & & \inner{\ab_m}{\xb} - b_m \end{pmatrix} \succeq 0\right\}.
+$$
+\end{example}
+
+Sin embargo, existen espectrahedros que no son poliedros.
+
+\begin{example}
+El disco unitario $D = \{(x,y) \in \R^2 \mid x^2 + y^2 \le 1\}$ es un espectrahedro. En efecto,
+$$
+D = \left\{(x,y) \in \R^2 \mid \begin{pmatrix} 1-x & y \\ y & 1+x \end{pmatrix} \succeq 0\right\}.
+$$
+
+Utilizando el criterio de los menores principales, vemos que $\begin{pmatrix} 1-x & y \\ y & 1+x \end{pmatrix} \succeq 0$ si y solo si:
+$$
+\begin{aligned}
+1-x &\ge 0, \\
+1+x &\ge 0, \\
+(1-x)(1+x)-y^2 = 1 - x^2 - y^2 &\ge 0.
+\end{aligned}
+$$
+\end{example}
+
+Geométricamente, un espectrahedro está definido por la intersección del cono $\Splus$ de matrices positivas semidefinidas con un espacio afín: el espacio generado por las matrices $\Ab_1, \dots, \Ab_m$ trasladado a $\Ab_0$. Por lo tanto, un espectrahedro es siempre un conjunto cerrado y convexo.
+
+Determinar qué conjuntos convexos son espectrahedros y cuáles no mediante un criterio sencillo es un problema abierto de investigación.
+
+\begin{ejercicio}
+Demostrar que el conjunto  $D = \{(x,y) \in \R^2 \mid x^4 + y^4 \le 1\}$ es un espectrahedro.
+
+Sugerencia:
+$$
+x^4 + y^4 \le 1 \iff \exists u, v \text{ tales que } x^2 \le u, y^2 \le v, u^2 + v^2 \le 1.
+$$
+\end{ejercicio}
+
+
+
+\begin{example}
+Consideramos el espectrahedro en $\R^2$ definido por
+$$
+\{
+(x, y) \in \R^2 : \Ab(x,y) := \begin{pmatrix}
+x+1 & 0    & y    \\
+0   & 2    & -x-1 \\
+y   & -x-1 & 2
+\end{pmatrix} \succeq 0
+\}.
+$$
+El polinomio caracterísitico de $\Ab$ es $\xi_{\Ab}(t) = t^3 - p_2 t^2 + p_1 t + p_0$, con $p_2 = -x-5$, $p_1 =-x^2 +2x-y^2 + 7$ y $p_0 = -3 -x+x^3+3x^2+2y^2$. Por lo tanto, la condición $\Ab \succeq 0$ es equivalente a
+\begin{align*}
+-p_2 &= x + 5 \ge 0 \\
+p_1 &= -x^2 + 2x - y^2 + 7 \ge 0 \\
+-p_0 &= 3 + x -x^3-3x^2-2y^2 \ge 0.
+\end{align*}
+
+Este conjunto corresponde al óvalo de la curva elíptica $3 + x -x^3-3x^2-2y^2 = 0$.
+\end{example}
+
+\subsection{Espectrahedros proyectados}
+
+Resulta interesante también estudiar las proyecciones lineales de espectrahedros.
+
+\begin{definition}
+Un conjunto $S \subset \R^m$ es un espectrahedro proyectado si es de la forma
+$$
+S = \{(x_1, \dots, x_m) \in \R^m \mid \exists (y_1, \dots, y_p) \in \R^p, \Ab_0 + \sum_{i=1}^m \Ab_i x_i + \sum_{j = 1}^p \Bb_j y_j \succeq 0\},
+$$
+donde $\Ab_0, \dots, \Ab_m, \Bb_1, \dots, \Bb_p$ son matrices simétricas dadas.
+\end{definition}
+
+\begin{example}
+Ver \cite[Ejemplo 2.9]{Blekherman2013}.
+\end{example}
+
+Veremos más adelante que este es un ejemplo de espectrahedro proyectado que no es un espectrahedro. Es decir, que trabajando con espectrahedros proyectados podemos ampliar el conjunto de conjuntos convexos sobre los que podemos resolver problemas.
+
+
+
+
+\subsection{Formulación primal del problema de programación semidefinida}
+
+Para plantear este tipo de problemas en forma análoga a un problema de programación lineal, introducimos la siguiente notación.
+
+Para matrices $\Xb, \Yb \in \R^{n \times n}$, llamamos \emph{producto interno traza} al producto
+$$
+\innerTrace{\Xb}{\Yb} = \Tr(\Xb^T \Yb) = \sum_{i=1}^n\sum_{j=1}^n x_{ij} y_{ij}, \quad \text{donde } \Tr(\Xb) = \sum_{i=1}^n x_{ii},
+$$
+que coincide con el producto interno usual pensado a $\Xb$ e $\Yb$ como vectores de $n \times n$ coordenadas.
+
+Con este producto interno, $\R^{n \times n}$ resulta un espacio euclídeo.
+
+Se cumplen las siguientes propiedades:
+\begin{enumerate}
+\item $\innerTrace{\Xb}{\Yb} = \innerTrace{\Yb}{\Xb}$,
+\item $\innerTrace{\Xb}{\Ib} = \innerTrace{\Ib}{\Xb} = \Tr(\Xb)$.
+\end{enumerate}
+
+Recordemos que $\Sym^n \subset \R^{n \times n}$ denota al conjunto de matrices simétricas de $n \times n$.
+
+Con la notación introducida, escribimos un problema de programación semidefinida como
+
+\begin{alignat*}{2}
+  & \text{minimizar: } & \innerTrace{\Cb}{\Xb} & \\
+  & \text{sujeto a: }  \quad & \innerTrace{\Ab_i}{\Xb} &= b_i, \quad i = 1, \dots, m, \\
+   && \Xb &\succeq 0,
+\end{alignat*}
+donde $\Cb, \Ab_i \in \Sym^n$. La matrix $\Xb \in \Sym^n$ es la variable sobre la cual realizamos la minimización.
+
+Podemos ver en seguida la similitud con un problema de programación lineal.
+La función a minimizar es una funcional lineal exactamente igual que en programación lineal. El conjunto factible, es decir el conjunto sobre el que se minimiza la función es un espectrahedro.
+
+En efecto, para describir el conjunto $\innerTrace{\Ab_i}{\Xb} = b_i$, $i = 1, \dots, m$, $\Xb \succeq 0$ mediante una desigualdad matricial lineal alcanza escribir cada coordenada de $\Xb$ como una expresión lineal en nuevas variables $\{y_1, \dots, y_s\}$.
+
+\begin{example}
+Podemos describir conjunto de matrices
+$$
+S = \{\Xb = \begin{pmatrix}
+x_{11} & x_{12} \\
+x_{12} & x_{22}
+\end{pmatrix} \mid x_{11} + x_{22} = 1, \Xb \succeq 0\}
+$$
+mediante la condición
+$$
+\begin{pmatrix}
+x_{11} & x_{12} \\
+x_{12} & 1 - x_{11}
+\end{pmatrix}  \succeq 0
+$$
+que a la vez es equivalente a la desigualdad matricial
+$$
+\begin{pmatrix}
+0 & 0 \\
+0 & 1
+\end{pmatrix}  +
+x_{11}
+\begin{pmatrix}
+1 & 0 \\
+0 & - 1
+\end{pmatrix}  +
+x_{12}
+\begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix}\succeq 0.
+$$
+\end{example}
+
+
+\section{Dualidad}
+Estudiamos ahora la teoría de dualidad en programación semidefinida.
+
+Definimos un problema en forma primal estándar como 
+\begin{alignat}{2}
+  & \text{minimizar: } & \quad & \innerTrace{\Cb}{\Xb} \nonumber \\
+  & \text{sujeto a: }  \quad & & \innerTrace{\Ab_i}{\Xb} = b_i, \quad i = 1, \dots, m, \tag{SDP-P}\label{sdp-p}\\
+   && & \Xb \succeq 0, \nonumber
+\end{alignat}
+y asociamos a un problema de esta forma otro problema, llamado \emph{problema dual}, que puede plantearse en la forma
+\begin{alignat}{2}
+  & \text{maximizar: } &   \quad & \inner{\yb}{\bb} \tag{SDP-D}\label{sdp-d} \\
+  & \text{sujeto a: } & \quad & \sum_{i=1}^m y_i  \Ab_i \preceq \Cb \nonumber 
+\end{alignat}
+
+Utilizando el Teorema \ref{teo:traza}, podemos seguir casi al pie de la letra la motivación que vimos para el problema de programación lineal para motivar la formulación de este problema dual.
+
+Podemos relajar este problema reemplazando las restricciones $\innerTrace{\Ab_i}{\Xb} = b_i, \quad i = 1, \dots, m,$ por una penalidad $$\sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb}),$$
+donde $\yb \in \R^m$ es un vector de costos del mismo tamaño que $\bb$. Obtenemos entonces el siguiente problema relajado:
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \innerTrace{\Cb}{\Xb} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb}), \\
+   & \text{sujeto a: } & \quad & \Xb \succeq 0.
+\end{alignat*}
+
+Llamamos $g(\yb)$ al costo óptimo en función de $\yb$ del problema relajado. Como tenemos más libertad en la elección de variables en el problema relajado, esperamos que $g(\yb)$ sea menor o igual que el costo óptimo $\innerTrace{\Cb}{\Xb}$ del problema primal. En efecto, si $\Xb^\star$ es una solución óptima del problema primal (suponiendo que existe tal matriz),
+$$
+g(\yb) = \min_{\Xb \succeq 0} \left\{ \innerTrace{\Cb}{\Xb} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb}) \right\} \le \inner{\Cb}{\Xb^\star} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb^\star}) = \inner{\Cb}{\Xb^\star},
+$$
+donde usamos para la última desigualdad que $\Xb^\star$ es una solución óptima del problema primal y por lo tanto $\innerTrace{\Ab_i}{\Xb^\star} = b_i$ para todo $1 \le i \le m$.
+
+Por lo tanto, para cualquier vector $\yb$, $g(\yb) \le \inner{\Cb}{\Xb^\star}$ y el valor de $g(\yb)$ es una cota inferior del costo óptimo $\inner{\Cb}{\Xb^\star}$ del problema primal. Queremos hallar la mejor cota posible, es decir, queremos hallar el vector $\pb$ que maximice $g(\yb)$. Este problema se conoce como el \emph{problema dual}, que podemos plantear en la forma:
+\begin{alignat*}{2}
+  & \text{maximizar: } & & g(\yb), \\
+   & \text{sujeto a: } & \quad & \text{ninguna restricción}.
+\end{alignat*}
+
+El resultado principal de la teoría de dualidad afirma que el costo óptimo del problema dual es igual al costo óptimo $\innerTrace{\Cb}{\Xb^\star}$ del problema primal. En otras palabras, si elegimos el valor de $\yb$ para el cual $g(\yb)$ es máximo, la posibilidad de violar las restricciones $\innerTrace{\Ab_i}{\Xb^\star} = b_i$, $1 \le i \le m$, no es de ninguna ayuda.
+
+Por la definición de $g(\yb)$,
+$$
+\begin{aligned}
+g(\yb) = \min_{\Xb \succeq 0} \left\{ \innerTrace{\Cb}{\Xb} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb})\right\}
+&= \sum_{i=1}^m y_i b_i + \min_{\Xb \succeq 0} \left\{ \innerTrace{\Cb}{\Xb} - \sum_{i=1}^m y_i (\innerTrace{\Ab_i}{\Xb}) \right\} \\
+&= \inner{\yb}{\bb} + \min_{\Xb \succeq 0} \left\{ \innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} \right\}. \\
+\end{aligned}
+$$
+
+Ahora bien, por el Teorema \ref{teo:traza}, si $\Cb - \sum_{i=1}^m y_i \Ab_i \succeq 0$, 
+$$\innerTrace{\Cb - \sum_{i=1}^m y_i \Ab_i}{\Xb} \ge 0$$
+para toda $\Xb \succeq 0$ y vale 0 si $\Xb = \cero$. Recíprocamente, si $\Cb - \sum_{i=1}^m y_i \Ab_i \not\succeq 0$, existe $\Xb \succeq 0$ tal que $\innerTrace{\Cb - \sum_{i=1}^m y_i \Ab_i \succeq 0}{\Xb} < 0$, y tomando múltiplos de $\Xb$ podemos hacer este valor tan chico como querramos. Obtenemos
+$$\min_{\Xb \succeq 0} \left\{ \innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} \right\} = \begin{cases}
+0 & \text{si } \Cb - \sum_{i=1}^m y_i \Ab_i \succeq 0, \\
+-\infty, & \text{en otro caso.}\end{cases}
+$$
+
+Como queremos maximizar $g(\yb)$, podemos quedarnos solo con los casos para los que $g(\yb) \neq -\infty$, que corresponden a $\Cb - \sum_{i=1}^m y_i \succeq 0$. Concluimos que el problema dual es equivalente al problema
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & \inner{\yb}{\bb},   \\
+   & \text{sujeto a: } & \quad & \sum_{i=1}^m y_i \Ab_i  \preceq \Cb,
+\end{alignat*}
+como queríamos.
+
+En resumen, definimos un vector $\yb$ de parámetros o variables duales, y para cada elección de $\yb$ podemos encontrar una cota inferior para costo óptimo del problema primal. El problema dual consiste en maximizar esa cota, es decir, obtener la cota mas precisa posible. Para algunos vectores $\yb$, la cota que obtenemos es $-\infty$, que no tiene utilidad. Por lo tanto, nos restringimos a las elecciones de $\yb$ que nos dan cotas no triviales, y eso nos da las restricciones del problema dual.
+
+Podemos sintetizar lo que acabamos de ver en el siguiente teorema.
+
+\begin{theorem}[dualidad débil]
+  Dadas $\Xb$ e $\yb$ dos soluciones factibles del problema primal y el problema dual respectivamente, 
+  $$\innerTrace{\Cb}{\Xb} - \inner{\yb}{\bb} \ge 0.$$
+\end{theorem}
+
+\begin{proof}
+Tenemos
+  $$\innerTrace{\Cb}{\Xb} - \inner{\yb}{\bb} = \innerTrace{\Cb}{\Xb} -  \sum_{i=1}^m y_i \left(\innerTrace{\Ab_i}{\Xb}\right) = 
+   \innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} \ge 0,
+   $$
+  por el Teorema \ref{teo:traza}.
+\end{proof}
+
+Como en el caso de programación lineal, tenemos el siguiente importante corolario inmediato.
+
+\begin{coro}
+Sean $\Xb$ e $\yb$ soluciones factibles de los problemas primal y dual respectivamente, y supongamos que $\inner{\yb}{\bb} = \innerTrace{\Cb}{\Xb}$. Entonces $\Xb$ e $\yb$ son soluciones óptimas de los problemas primal y dual respectivamente.
+\end{coro}
+
+La condición $\inner{\yb}{\bb} = \innerTrace{\Cb}{\Xb}$ es equivalente a la condición
+$$
+\innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} = 0
+$$
+que llamamos la \emph{condición de holgura complementaria}.
+
+Veamos algunos ejemplos de la relación que puede darse entre el problema primal y dual.
+
+\begin{example}
+Para el problema primal para $\Xb = \begin{pmatrix} x_{11} & x_{21} \\ x_{21} & x_{22} \end{pmatrix}$:
+\begin{alignat*}{2}
+  & \text{minimizar: }  & \quad & 2x_{11} + 2x_{12},   \\
+   & \text{sujeto a: } & \quad & x_{11} + x_{22} = 1, \\
+   & & &  \Xb \succeq 0,
+\end{alignat*}
+despejando $x_{22} = 1 - x_{11}$, las restricciones que deben cumplirse son: $x_{11} \ge 0$, $x_{11} \le 1$ y 
+$$
+x_{11}(1-x_{11}) \ge x_{12}^2,
+$$
+cuyo gráfico es un disco de radio $1/2$ centrado en el punto $(1/2, 0)$.
+
+La solución óptima es 
+$$
+\Xb^\star = \begin{pmatrix}
+\frac{2 - \sqrt{2}}{4} & -\frac{\sqrt{2}}{4} \\
+-\frac{\sqrt{2}}{4} & \frac{2 + \sqrt{2}}{4} 
+\end{pmatrix}
+$$
+y el costo óptimo es $1 - \sqrt{2}$.
+
+Para obtener el problema dual definimos $\Cb = \begin{pmatrix}
+2 & 1 \\ 1 & 0
+\end{pmatrix}$, $\Ab_1 = \begin{pmatrix}
+1 & 0 \\ 0 & 1
+\end{pmatrix}$ y $b_1 = 1$ ($m = 1$).
+
+El problema dual es
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & y_1   \\
+   & \text{sujeto a: } & \quad & y_1 \Ab_1 \preceq \Cb.
+\end{alignat*}
+o equivalentemente
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & y   \\
+   & \text{sujeto a: } & \quad & \begin{pmatrix}
+2 - y & 1 \\ 1 & -y \end{pmatrix} \succeq 0.
+\end{alignat*}
+
+En este caso tenemos las restricciones $y \le 2$, $y \le 0$ y $-(2-y)y - 1 \ge 0$. Completando cuadrado obtenemos
+$$
+(y-1)^2 \ge 2,
+$$
+y el máximo valor posible de $y < 0$ es $y = 1 - \sqrt{2}$.
+
+Vemos que los valores óptimos de ambos problemas coinciden y se cumple la condición de holgura complementaria
+$$
+\innerTrace{(\Cb - y^\star \Ab_1 )}{\Xb^\star} = \innerTrace{
+\begin{pmatrix}
+1 + \sqrt{2} & 1 \\ 1 & \sqrt{2} - 1 
+\end{pmatrix}}
+{\begin{pmatrix}
+\frac{2 - \sqrt{2}}{4} & -\frac{\sqrt{2}}{4} \\
+-\frac{\sqrt{2}}{4} & \frac{2 + \sqrt{2}}{4}
+\end{pmatrix}} = 0.
+$$
+\end{example}
+
+Veamos a continuación otro ejemplo en el cual ambos problemas son factibles y sin embargo los valores óptimos son diferentes.
+
+\begin{example}
+Para $\Xb \in \R^{3 \times 3}$ y $\alpha \ge 0$ dado, consideramos el siguiente par de problemas primal-dual
+
+\begin{multicols}{2}\noindent
+\begin{alignat*}{2}
+  & \text{minimizar: }  & \quad & \alpha x_{11}   \\
+   & \text{sujeto a: } & \quad & x_{22} = 0, \\
+   &&& x_{11} + 2 x_{23} = 1, \\
+   &&& \Xb \succeq 0.
+\end{alignat*}
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & y_2   \\
+   & \text{sujeto a: } & \quad & \begin{pmatrix}
+\alpha - y_2 & 0 & 0 \\ 0 & -y_1 & -y_2 \\ 0 & -y_2 & 0 \end{pmatrix} \succeq 0.
+\end{alignat*}
+\end{multicols}
+
+Para el problema primal, como $x_{22}=0$ y $\Xb \succeq 0$, todas las coordenadas de $\Xb$ en la segunda fila y segunda columna deben ser 0. Por lo tanto, $0 = x_{23} = \frac{1 - x_{11}}{2}$ y obtenemos que $x_{11} = 1$. La única solución factible del problema es 
+$$
+\Xb = \begin{pmatrix}
+1 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix}$$
+y el costo óptimo es $\alpha$.
+
+Para el problema dual, debe ser $y_2 = 0$ y tomando cualquier $y_1 \ge 0$ obtenemos una solución factible. El costo óptimo es por lo tanto 0, el salto de dualidad es $p^\star - d^\star = \alpha - 0 = \alpha$.
+
+\end{example}
+
+Analizamos ahora otra situación que puede darse en la que si bien los costos óptimos coinciden, los problemas pueden no tener solución óptima.
+
+\begin{example}
+Para $\Xb \in \R^{2 \times 2}$, consideramos el siguiente par de problemas primal-dual
+\begin{multicols}{2}\noindent
+\begin{alignat*}{2}
+  & \text{minimizar: }  & \quad & x_{11}   \\
+   & \text{sujeto a: } & \quad & x_{21} = 1, \\
+   &&& \Xb \succeq 0.
+\end{alignat*}
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & y   \\
+   & \text{sujeto a: } & \quad & \begin{pmatrix}
+ 1 & -\frac{y}{2}  \\ -\frac{y}{2} & 0 \end{pmatrix} \succeq 0.
+\end{alignat*}
+\end{multicols}
+
+Para el problema primal, la restricción 
+$\begin{pmatrix} x_{11} & 1 \\ 1 & x_{22}\end{pmatrix} \succeq 0$ 
+se cumple si 
+$$x_{11} \ge 0, \quad x_{22} \ge 0, \quad x_{11}x_{22} \ge 1.$$ 
+El costo óptimo es $0$ pero no existe ningún valor de $(x_{11}, x_{22})$ para el cuál se alcance el ínfimo.
+
+Para el problema dual, debe ser $\frac{y}{2} = 0$. Por lo tanto, el costo óptimo es $d^\star = 0$ que se alcanza para la solución factible $y = 0$.
+
+Vemos que si bien el salto de dualidad $p^\star - d^\star = 0$, no existen $\Xb$ e $\yb$ que cumplan la condición de holgura complementaria.
+
+\end{example}
+
+En cierto sentido, estos últimos ejemplos son patológicos. Bajo condiciones blandas la dualidad fuerte también se cumple en programación semidefinida. Una de tales condiciones es requerir que los problemas sean \emph{estrictamente factibles}. En el problema primal, esto significa que existe $\Xb \succ 0$ que verifica las restricciones. En el problema dual, esto significa que existe $\yb \in \R^m$ tal que $\Cb - \sum_{i=1}^m y_i \Ab_i \succ 0$. En este caso la situación es tan buena como en programación lineal.
+
+\begin{theorem}[dualidad fuerte] Suponemos que tanto el problema primal $\eqref{sdp-p}$ como el problema dual $\eqref{sdp-d}$ son estrictamente factibles. Entonces ambos problemas tienen solución óptima, y el costo óptimo coincide. Es decir, no hay salto de dualidad.
+\end{theorem}
+
+\begin{proof} Ver \cite[Teorema 4.1]{Todd2001}.
+\end{proof}
+
+
+
+%\section{Matrices positivas semidefinidas}
+%
+%Propiedades que necesitamos:
+%
+%\begin{enumerate}
+%\item $X$ es positiva semidefinida sii $X = PP^T$.
+%\item $X$ es positiva semidefinida de rango 1, $X = xx^T$?
+%\item Complementos de Schur (para teoría de control)
+%\end{enumerate} 

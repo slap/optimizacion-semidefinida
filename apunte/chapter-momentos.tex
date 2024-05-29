@@ -1,0 +1,123 @@
+\chapter{Momentos}
+\noindent Referencia principal: \cite[Capítulo 3]{Lasserre2010}.
+
+\section{El problema de los momentos en una variable}
+
+Ya vimos los siguientes resultados para polinomios en una variable:
+
+\begin{enumerate}
+\item Si $f \in \R[x]$ es positivo sobre todo $\R$, entonces $f$ es una suma de cuadrados, $f = q_1^2 + \dots + q_s^2$.
+\item Si $f \in \R[x]$ es positivo en $[0, +\infty)$, entonces $f = p_0 + x p_1$, para dos polinomios SOS $p_0, p_1 \in \Sigma[x]$.
+\end{enumerate}
+
+Veamos cómo se traducen estos dos resultados al problema de momentos. Nos interesa calcular la integral de un polinomio sobre un subconjunto $K \subset \R$.
+$$
+\int_K f(x) dx.
+$$
+
+Observamos que si $f(x) = \sum_{i=0}^n f_i x^i$, entonces su integral es
+$$
+\int_K f(x) dx = \int_K \sum_{i=0}^n f_i x^i dx = \sum_{i=0}^n f_i \int_K x^i dx.
+$$
+
+Es decir, que conociendo $\int_K x^i dx$ para todo $i \in \N_0$ podemos calcular fácilmente la integral de cualquier polinomio sobre $K$.
+Siguiendo esta idea, consideramos una secuencia infinita $y = (y_i)_{i \in \N_0} \subset \R$ y definimos la funcional lineal $L_y : \R[x] \rightarrow \R$,
+$$
+f(x) = \sum_{i \in \N_0} f_i x^i \mapsto L_y(f) = \sum_{i \in \N_0} f_i y_i.
+$$
+
+Si tomamos $y_i = \int_{K} x^i dx$, para un conjunto $K \subset \R$, entonces
+$$
+L_y(f) = \sum_{i \in \N_0} f_i \int_{K} x^i dx = \int_{K} \sum_{i \in \N_0} f_i  x^i dx = \int_{K} f dx.
+$$
+
+El problema de momentos consiste en determinar para qu\'e secuencias $y = (y_i)_{i \in \N_0}$ existe un conjunto $K$ tal que $y_i = \int_{K} x^i dx$, o más generalmente, una medida $\mu$ tal que
+$$
+y_i = \int_K x^i d\mu.
+$$
+
+Comenzamos por el teorema principal, que veremos sin demostración.
+\begin{theorem}[Riesz-Haviland]
+\label{teo:Riesz}
+Sea $y = (y_i)_{i \in \N_0} \subset \R$ y sea $K \subset \R$ un conjunto cerrado.
+Existe una medida de Borel finita $\mu$ en $K$ tal que
+$$
+\int_K x^i d\mu = y_i, \quad \forall i \in \N_0,
+$$
+si y solo si $L_y(f) \ge 0$ para todos los polinomios $f \in \R[x]$ no-negativos en $K$.
+\end{theorem}
+
+En las condiciones del teorema, decimos que la medida de Borel $\mu$ representa a $y$ en $K$.
+
+Utilizando este teorema, podemos dar las caracterizaciones simples que buscamos.
+
+Dada una sucesión $y = (y_i) \subset \R$, definimos las matrices de Hankel $H_n(y)$ y $B_n(y) \in \R^{(n+1) \times (n+1)}$ por
+\begin{align*}
+H_n(y)(i,j) &:= y_{i+j-2}, \\
+B_n(y)(i,j) &:= y_{i+j-1},
+\end{align*}
+para todo $i, j \in \N$, $1 \le i,j \le n+1$.
+
+\begin{example}
+Para $y = (1,2,3,4,5,6,7,8,0,0,0, \dots)$,
+$$
+H_3 = \begin{pmatrix}
+1 & 2 & 3 & 4\\
+2 & 3 & 4 & 5\\
+3 & 4 & 5 & 6\\
+4 & 5 & 6 & 7
+\end{pmatrix}
+\quad y \quad
+B_3 = \begin{pmatrix}
+2 & 3 & 4 & 5 \\
+3 & 4 & 5 & 6 \\
+4 & 5 & 6 & 7 \\
+5 & 6 & 7 & 8
+\end{pmatrix}.
+$$
+\end{example}
+
+\begin{theorem}
+Sea $y = (y_j)_{j \in \N_0} \subset \R$. Entonces,
+\begin{enumerate}
+\item \label{it:hankel} existe una medida de Borel $\mu$ que representa a $y$ en $\R$ si y solo si la forma cuadrática
+\begin{equation}
+\label{eq:hankel}
+x \mapsto s_n(x) := \sum_{i,j = 0}^n y_{i+j} x_i x_j
+\end{equation}
+es positiva semidefinida para todo $n \in \N$. Equivalentemente, $H_n(y) \succeq 0$ para todo $n \in \N$.
+
+\item \label{it:hankelu} existe una medida de Borel $\mu$ que representa a $y$ en $\R_+$ si y solo si las formas cuadráticas \ref{eq:hankel} y
+\begin{equation}
+\label{eq:hankelu}
+x \mapsto u_n(x) := \sum_{i,j = 0}^n y_{i+j+1} x_i x_j
+\end{equation}
+son ambas positivas semidefinidas para todo $n \in \N$. Equivalentemente, $H_n(y) \succeq 0$ y $B_n(y) \succeq 0$ para todo $n \in \N$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\ref{it:hankel} Si $y_n = \int_\R z^n d\mu(z)$, entonces
+$$
+s_n(x) = \sum_{i,j = 0}^n x_i x_j \int_{\R} z^{i+j} d\mu(z) = \int_\R (\sum_{i=0}^n x_i z^i)^2 d\mu(z) \ge 0.
+$$
+
+Recíprocamente, si $H_n(y) \succeq 0$ para todo $n \in \N$, para todo $q \in \R^{n+1}$ tenemos
+$$
+q^t H_n(y) q \ge 0.
+$$
+Dado $p \in \R[x]$ un polinomio no-negativo en $\R$, $p$ se puede escribir como una suma de cuadrados $p = \sum_{j = 1}^r q_j^2$. Luego,
+$$
+\sum_{k=0}^{2n} p_k y_k = L_y(p) = L_y(\sum_{j=1}^r q_j^2) = \sum_{j=1}^r q^t_j H_n(y) q_j \ge 0,
+$$
+donde $q_j$ es el vector de coeficientes de $q_j \in \R[x]$. Como $p \ge 0$ es arbitrario, obtenemos por el Teorema \ref{teo:Riesz} que $y_i = \int_\R x^i d\mu$ para alguna medida $\mu$ en $\R$.
+
+\ref{it:hankelu} La demostración es similar al ítem anterior, utilizando que si $p$ es no-negativo en $\R_+$, entonces $p$ es de la forma
+$$
+p(x) = p_0(x) + x p_1(x),
+$$
+con $p_0, p_1 \in \Sigma[x]$.
+\end{proof}
+
+\section{El problema de los momentos en varias variables}
+\section{Algoritmos. Relajaci\'on semidefinida}
