@@ -1,0 +1,770 @@
+\documentclass[aspectratio=169,12pt,spanish]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+\usepackage{wrapfig}
+
+%\usepackage{multicol}
+%\usepackage{mathtools}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{pgf,tikz}
+\usetikzlibrary{matrix}
+\usetikzlibrary{arrows}
+
+%\usepackage{wrapfig}
+\mode<presentation>
+\usefonttheme{professionalfonts}
+\usetheme{Darmstadt}
+\usecolortheme{orchid}
+\useoutertheme{default}
+\setbeamertemplate{headline}{}
+
+\newcounter{savedenum}
+\newcommand*{\saveenum}{\setcounter{savedenum}{\theenumi}}
+\newcommand*{\resume}{\setcounter{enumi}{\thesavedenum}}
+
+\renewcommand{\baselinestretch}{1.1}
+
+%gets rid of bottom navigation bars
+\setbeamertemplate{footline}[page number]
+
+%gets rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+%\frameframe{none} % No default frame
+
+%\setlength{\framewidth}{8.7in} \setlength{\frameheight}{7.2in}
+
+\parindent 0pt
+\setlength{\parskip} {1ex plus 0.5ex minus 0.2ex}
+
+
+\usepackage[bbgreekl]{mathbbol}
+\usepackage{amssymb, amsthm, amsmath}
+\usepackage{bm}
+
+\newtheorem{ejercicio}{Ejercicio}
+\newtheorem{proposition}[theorem]{Proposición}
+
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+\DeclareSymbolFontAlphabet{\mathbbl}{bbold}
+
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{lmodern}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{stmaryrd}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\graphicspath{ {../../images} }
+\input{../../latex/preamble}
+
+\pagestyle{empty}
+
+\begin{document}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+ \begin{center}
+
+\Large\textbf{Optimización Semidefinida} \\
+\large\textbf{Clase 07 - Dualidad}
+%\vspace{0.5cm}
+
+% \textit{Santiago Laplagne} \\
+%slaplagn@dm.uba.ar \\
+
+
+%\vspace{0.5cm}
+%{\small Trabajo en progreso en conjunto con \emph{Jose Capco} (Universit\"at Innsbruck) y \emph{Claus Scheiderer} %(Universit\"at Konstanz).} \\
+
+\vspace{1cm}
+ Segundo Cuatrimestre 2021
+ \\
+ {\small Facultad de Ciencias Exactas y Naturales, UBA}
+ \end{center}
+
+\end{frame}
+
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Dualidad en programación lineal}
+
+Una de las propiedades m\'as interesantes de la programaci\'on lineal es que a cada problema en forma estándar
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \inner{\cb}{\xb}  \\
+   & \text{sujeto a: } & \quad & \Ab \xb = \bb, \\
+   &&& \xb \ge 0
+\end{alignat*}
+que llamamos \emph{problema primal} podemos asociarle un \emph{problema dual} de la siguiente forma:
+\begin{alignat*}{2}
+  & \text{maximizar: } & & \inner{\yb}{\bb}  \\
+   & \text{sujeto a: } & \quad & \Ab^T \yb \le \cb,
+\end{alignat*}
+que guarda relaciones muy fuertes con el problema primal.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejercicio}
+
+Calcular el problema dual asociado al problema
+\begin{alignat*}{2}
+  & \text{minimizar: } & & 3x_1 + 2x_2 + 7x_3 + 4x_4  \\
+   & \text{sujeto a: } & \quad & 4x_1 - 3x_2 + x_4 = 7, \\
+   &  & \quad & x_1 + x_3 - x_4 = 9, \\
+   &&& \xb \ge 0.
+\end{alignat*}
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Notamos $\xb^\star$ a una solución óptima, que suponemos que existe.
+
+Podemos relajar el problema primal reemplazando la restricción $\Ab\xb = \bb$ por una penalidad
+$$\inner{\yb}{(\bb - \Ab\xb)},$$
+donde $\yb$ es un vector de precios del mismo tamaño que $\bb$. Obtenemos entonces el siguiente problema:
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \inner{\cb}{\xb} + \inner{\yb}{(\bb - \Ab\xb)}, \\
+   & \text{sujeto a: } & \quad & \xb \ge \cero.
+\end{alignat*}
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Llamamos $g(\yb)$ al costo óptimo en función de $\yb$ del problema relajado. Como tenemos más libertad en la elección de variables en el problema relajado, esperamos que $g(\yb)$ sea menor o igual que el costo óptimo $\inner{\cb}{\xb^\star}$ del problema primal. En efecto,
+$$
+g(\yb) = \min_{\xb \ge 0} \left\{ \inner{\cb}{\xb} + \inner{\yb}{(\bb-\Ab\xb)}\right\} \le \inner{\cb}{\xb^\star} + \inner{\yb}{(\bb - \Ab\xb^\star)} = \inner{\cb}{\xb^\star},
+$$
+donde usamos para la última desigualdad que $\xb^\star$ es una solución óptima del problema primal y por lo tanto $\Ab\xb^\star = \bb$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Por lo tanto, para cualquier vector $\yb$,
+$$g(\yb) \le \inner{\cb}{\xb^\star}$$
+y el valor de $g(\yb)$ es una cota inferior del costo óptimo $\inner{\cb}{\xb^\star}$ del problema primal. Queremos hallar la mejor cota posible, es decir, queremos hallar el vector $\yb$ que maximice $g(\yb)$. Este problema se conoce como el \emph{problema dual}, que podemos plantear en la forma:
+\begin{alignat*}{2}
+  & \text{maximizar: } & & \min_{\xb \ge 0} \left\{ \inner{\cb}{\xb} + \inner{\yb}{(\bb-\Ab\xb)}\right\}, \\
+   & \text{sujeto a: } & \quad & \text{ninguna restricción}.
+\end{alignat*}
+donde $\yb$ es la variable de optimización.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+El resultado principal de la teoría de dualidad afirma que el costo óptimo del problema dual es igual al costo óptimo $\inner{\cb}{\xb^\star}$ del problema primal.
+
+En otras palabras, si elegimos el valor de $\yb$ para el cual $g(\yb)$ es máximo, la posibilidad de violar las restricciones $ \Ab\xb = \bb$ no es de ninguna ayuda.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Por la definición de $g(\yb)$,
+$$
+\begin{aligned}
+g(\yb) = \min_{\xb \ge 0} \left\{ \inner{\cb}{\xb} + \inner{\yb}{(\bb-\Ab\xb)}\right\}
+&= \inner{\yb}{\bb} + \min_{\xb \ge 0} \left\{ \inner{\cb}{\xb} - \inner{\yb}{(\Ab\xb)} \right\} \\
+&= \inner{\yb}{\bb} + \min_{\xb \ge 0} \left\{ \inner{\cb}{\xb} - \inner{(\Ab^T\yb)}{\xb} \right\} \\
+&= \inner{\yb}{\bb} + \min_{\xb \ge 0} \left\{ \inner{(\cb - \Ab^T\yb)}{\xb} \right\},
+\end{aligned}
+$$
+recordando que $\inner{\xb}{(\Ab\yb)} = \xb^T \Ab \yb = (\Ab^T \xb)^T \yb = \inner{(\Ab^T \xb)}{\yb}$.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Ahora bien, notemos que como nos restringimos a los vectores $\xb \ge \cero$,
+$$\min_{\xb \ge 0} \left\{ \inner{(\cb - \Ab^T\yb)}{\xb} \right\} = \begin{cases}
+0 & \text{si } \cb - \Ab^T\yb \ge \cero, \\
+-\infty, & \text{en otro caso.}\end{cases}
+$$
+
+Como queremos maximizar $g(\yb)$, podemos quedarnos solo con los casos para los que $g(\yb) \neq -\infty$. Concluimos que el problema dual es equivalente al problema
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & \inner{\yb}{\bb},   \\
+   & \text{sujeto a: }  &       & \Ab^T\yb \le \cb. \\
+\end{alignat*}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+En resumen:
+\begin{itemize}
+\item Definimos un vector $\yb$ de parámetros o variables duales, y para cada elección de $\yb$ podemos encontrar una cota inferior para el costo óptimo del problema primal.
+\item El problema dual consiste en maximizar esa cota, es decir, obtener la cota más precisa posible.
+\item Para algunos vectores $\yb$, la cota que obtenemos es $-\infty$, que no tiene utilidad.
+\item Por lo tanto, nos restringimos a las elecciones de $\yb$ que nos dan cotas no triviales, y eso nos da las restricciones del problema dual.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Dualidad débil}
+
+A partir del razonamiento anterior, deducimos el siguiente resultado
+
+\begin{theorem}[dualidad débil]
+Si $\xb$ es una solución factible del problema primal e $\yb$ es una solución factible del problema dual, entonces
+$$
+\inner{\yb}{\bb} \le \inner{\cb}{\xb}.
+$$
+\end{theorem}
+
+Si bien este resultado es muy simple, tiene consecuencias importantes.
+
+\begin{corollary}
+\begin{itemize}
+\item Si el costo óptimo del problema primal es $-\infty$, entonces el problema dual no es factible.
+\item Si el costo óptimo del problema dual es $+\infty$, entonces el problema primal no es factible.
+\end{itemize}
+\end{corollary}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Dualidad débil}
+
+Obtenemos también un criterio para determinar la optimalidad de las soluciones.
+
+\begin{corollary}
+Sean $\xb^\star \in \R^n$ e $\yb^\star \in \R^m$ soluciones factibles de los problemas primal y dual respectivamente, y supongamos que $$\inner{\yb^\star}{\bb} = \inner{\cb}{\xb^\star}.$$
+
+Entonces $\xb^{\star}$ e $\yb^\star$ son soluciones óptimas de los problemas primal y dual respectivamente.
+\end{corollary}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Dualidad fuerte}
+Enunciamos el resultado principal de la teoría dual de programación lineal.
+
+\begin{theorem}[dualidad fuerte]
+Si un problema primal de programación lineal tiene solución óptima, entonces también el problema dual tiene solución óptima, y los respectivos costos óptimos son iguales.
+\end{theorem}
+
+\textbf{Demostración.}
+Para una solución óptima $\xb$, el vector de costos reducidos $\cb^T - \cb_B^T \Bb^{-1} \Ab$ satisface
+$$\cb^T - \cb_B^T \Bb^{-1} \Ab \ge 0.$$
+
+%($\pb^T = \cb_B^T \Bb^{-1}$)
+Definimos ahora $\yb \in \R^m$ tal que $\yb^T = \cb_B^T \Bb^{-1}$. Vemos que $\yb^T \Ab  \le \cb^T$, y por lo tanto, $\yb$ es una solución factible del problema dual.
+
+Ver demostración completa en el apunte.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Dualidad en programación semidefinida}
+
+Estudiamos ahora la teoría de dualidad en programación semidefinida.
+
+Definimos un problema en forma primal estándar como
+\begin{alignat}{2}
+  & \text{minimizar: } & \quad & \innerTrace{\Cb}{\Xb} \nonumber \\
+  & \text{sujeto a: }  \quad & & \innerTrace{\Ab_i}{\Xb} = b_i, \quad i = 1, \dots, m, \tag{SDP-P}\label{sdp-p}\\
+   && & \Xb \succeq 0, \nonumber
+\end{alignat}
+y asociamos a un problema de esta forma otro problema, llamado \emph{problema dual}, que puede plantearse en la forma
+\begin{alignat}{2}
+  & \text{maximizar: } &   \quad & \inner{\yb}{\bb} \tag{SDP-D}\label{sdp-d} \\
+  & \text{sujeto a: } & \quad & \sum_{i=1}^m y_i  \Ab_i \preceq \Cb. \nonumber
+\end{alignat}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejercicio}
+
+Consideramos el problema primal para $\Xb = \begin{pmatrix} x_{11} & x_{21} \\ x_{21} & x_{22} \end{pmatrix}$,
+\begin{alignat*}{2}
+  & \text{minimizar: }  & \quad & 2x_{11} + 2x_{12}   \\
+   & \text{sujeto a: } & \quad & x_{11} + x_{22} = 1, \\
+   & & &  \Xb \succeq 0.
+\end{alignat*}
+
+Calcular el problema dual asociado.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Matrices semidefinidas positivas y producto interno traza}
+
+
+Para adaptar el desarrollo realizado en programación lineal, utilizamos el siguiente resultado.
+
+\begin{theorem}
+Una matriz $\Ab$ es semidefinida positiva si y solo si $\innerTrace{\Ab}{\Xb} \ge 0$ para toda matriz $\Xb \in \Splus$.
+\label{teo:traza}
+\end{theorem}
+
+\textbf{Demostración.}
+Si $\Ab \succeq 0$, entonces $\Ab = \Bb^T \Bb$ para alguna matriz $\Bb$ y por lo tanto,
+$$
+\innerTrace{\Ab}{\Xb} = \tr(\Ab\Xb) = \tr(\Bb^T \Bb \Xb) = \tr(\Bb \Xb \Bb^T).
+$$
+
+Como $\Xb \succeq 0$, también $\Bb \Xb \Bb^T \succeq 0$ y por lo tanto $\tr(\Bb \Xb \Bb^T) \ge 0$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Matrices semidefinidas positivas y producto interno traza}
+
+Para la otra dirección, si $\xb \in \R^n$, entonces $\xb \xb^T \in \Rnn$ es una matriz semidefinida positiva. Si $\innerTrace{\Ab}{\Xb} \ge 0$ para toda $\Xb$, entonces $\innerTrace{\Ab}{\xb \xb^T}  \ge 0$ para todo $\xb \in \Rn$ y
+$$
+\innerTrace{\Ab}{\xb\xb^T} = \tr(\Ab \xb \xb^T) = \tr(\xb^T \Ab \xb) = \xb^T \Ab \xb
+$$
+y por lo tanto $\xb^T \Ab \xb \ge 0$ para todo $\xb$.
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Podemos relajar el problema primal reemplazando las restricciones
+$$\innerTrace{\Ab_i}{\Xb} = b_i, \quad i = 1, \dots, m,$$
+por una penalidad $$\sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb}),$$
+donde $\yb \in \R^m$ es un vector de costos del mismo tamaño que $\bb$. Obtenemos el siguiente problema relajado:
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \innerTrace{\Cb}{\Xb} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb}), \\
+   & \text{sujeto a: } & \quad & \Xb \succeq 0.
+\end{alignat*}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Llamamos $g(\yb)$ al costo óptimo en función de $\yb$ del problema relajado. Como tenemos más libertad en la elección de variables en el problema relajado, esperamos que $g(\yb)$ sea menor o igual que el costo óptimo $\innerTrace{\Cb}{\Xb}$ del problema primal.
+
+En efecto, si $\Xb^\star$ es una solución óptima del problema primal (suponiendo que existe tal matriz),
+$$
+\begin{aligned}
+g(\yb) &= \min_{\Xb \succeq 0} \left\{ \innerTrace{\Cb}{\Xb} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb}) \right\} \\
+&\le \innerTrace{\Cb}{\Xb^\star} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb^\star}) = \innerTrace{\Cb}{\Xb^\star},
+\end{aligned}
+$$
+donde usamos para la última desigualdad que $\Xb^\star$ es una solución óptima del problema primal y por lo tanto $\innerTrace{\Ab_i}{\Xb^\star} = b_i$ para todo $1 \le i \le m$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Por lo tanto, para cualquier vector $\yb$,
+$$g(\yb) \le \innerTrace{\Cb}{\Xb^\star}$$
+y el valor de $g(\yb)$ es una cota inferior del costo óptimo $\inner{\Cb}{\Xb^\star}$ del problema primal. Queremos hallar la mejor cota posible, es decir, queremos hallar el vector $\yb$ que maximice $g(\yb)$. Este problema se conoce como el \emph{problema dual}, que podemos plantear en la forma:
+\begin{alignat*}{2}
+  & \text{maximizar: } & & \min_{\Xb \succeq 0} \left\{ \innerTrace{\Cb}{\Xb} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb}) \right\} \\
+   & \text{sujeto a: } & \quad & \text{ninguna restricción},
+\end{alignat*}
+donde $\yb = (y_1, \dots, y_m)$ es la variable de optimización.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Por la definición de $g(\yb)$,
+$$
+\begin{aligned}
+g(\yb) &= \min_{\Xb \succeq 0} \left\{ \innerTrace{\Cb}{\Xb} + \sum_{i=1}^m y_i (b_i - \innerTrace{\Ab_i}{\Xb})\right\} \\
+&= \sum_{i=1}^m y_i b_i + \min_{\Xb \succeq 0} \left\{ \innerTrace{\Cb}{\Xb} - \sum_{i=1}^m y_i (\innerTrace{\Ab_i}{\Xb}) \right\} \\
+&= \inner{\yb}{\bb} + \min_{\Xb \succeq 0} \left\{ \innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} \right\}. \\
+\end{aligned}
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Ahora bien, por la propiedad del producto interno traza, si $\Cb - \sum_{i=1}^m y_i \Ab_i \succeq 0$,
+$$\innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} \ge 0$$
+para toda $\Xb \succeq 0$ y vale 0 si $\Xb = \cero$.
+
+Recíprocamente, si $\Cb - \sum_{i=1}^m y_i \Ab_i \not\succeq 0$, existe $\Xb \succeq 0$ tal que
+$$\innerTrace{(\Cb - \sum_{i=1}^m y_i \Ab_i)}{\Xb} < 0,$$
+y tomando múltiplos de $\Xb$ podemos hacer este valor tan chico como querramos. Obtenemos
+$$\min_{\Xb \succeq 0} \left\{ \innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} \right\} = \begin{cases}
+0 & \text{si } \Cb - \sum_{i=1}^m y_i \Ab_i \succeq 0, \\
+-\infty, & \text{en otro caso.}\end{cases}
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Como queremos maximizar $g(\yb)$, podemos quedarnos solo con los casos para los que $g(\yb) \neq -\infty$, que corresponden a $\Cb - \sum_{i=1}^m y_i \succeq 0$.
+
+Concluimos que el problema dual es equivalente al problema
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & \inner{\yb}{\bb},   \\
+   & \text{sujeto a: } & \quad & \sum_{i=1}^m y_i \Ab_i  \preceq \Cb,
+\end{alignat*}
+como queríamos.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Dualidad débil}
+
+Podemos sintetizar lo que acabamos de ver en el siguiente teorema.
+
+\begin{theorem}[dualidad débil]
+  Dadas $\Xb$ e $\yb$ dos soluciones factibles del problema primal y el problema dual respectivamente,
+  $$\innerTrace{\Cb}{\Xb} - \inner{\yb}{\bb} \ge 0.$$
+\end{theorem}
+
+\textbf{Demostración}
+Tenemos
+  $$\innerTrace{\Cb}{\Xb} - \inner{\yb}{\bb} = \innerTrace{\Cb}{\Xb} -  \sum_{i=1}^m y_i \left(\innerTrace{\Ab_i}{\Xb}\right) =
+   \innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} \ge 0,
+   $$
+  por la propiedad del producto interno traza.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Condición de holgura complementaria}
+
+Como en el caso de programación lineal, tenemos el siguiente importante corolario inmediato.
+
+\begin{corollary}
+Sean $\Xb$ e $\yb$ soluciones factibles de los problemas primal y dual respectivamente, y supongamos que $\inner{\yb}{\bb} = \innerTrace{\Cb}{\Xb}$. Entonces $\Xb$ e $\yb$ son soluciones óptimas de los problemas primal y dual respectivamente.
+\end{corollary}
+
+La condición $\inner{\yb}{\bb} = \innerTrace{\Cb}{\Xb}$ es equivalente a la condición
+$$
+\innerTrace{\left(\Cb - \sum_{i=1}^m y_i \Ab_i\right)}{\Xb} = 0
+$$
+que llamamos la \emph{condición de holgura complementaria}.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo 1}
+
+Veamos algunos ejemplos de la relación que puede darse entre el problema primal y dual.
+
+\textbf{Ejemplo.} Consideramos el problema primal para $\Xb = \begin{pmatrix} x_{11} & x_{21} \\ x_{21} & x_{22} \end{pmatrix}$,
+\begin{alignat*}{2}
+  & \text{minimizar: }  & \quad & 2x_{11} + 2x_{12}   \\
+   & \text{sujeto a: } & \quad & x_{11} + x_{22} = 1, \\
+   & & &  \Xb \succeq 0.
+\end{alignat*}
+
+Despejando $x_{22} = 1 - x_{11}$, las restricciones que deben cumplirse son:
+$$x_{11} \ge 0, \quad x_{11} \le 1 \quad \text{ y } \quad x_{11}(1-x_{11}) \ge x_{12}^2,
+$$
+cuyo gráfico es un disco de radio $1/2$ centrado en el punto $(1/2, 0)$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo 1 (cont.)}
+
+La solución óptima es
+$$
+\Xb^\star = \begin{pmatrix}
+\frac{2 - \sqrt{2}}{4} & -\frac{\sqrt{2}}{4} \\
+-\frac{\sqrt{2}}{4} & \frac{2 + \sqrt{2}}{4}
+\end{pmatrix}
+$$
+y el costo óptimo es $1 - \sqrt{2}$.
+
+Para obtener el problema dual definimos
+$$\Cb = \begin{pmatrix}
+2 & 1 \\ 1 & 0
+\end{pmatrix}, \quad \Ab_1 = \begin{pmatrix}
+1 & 0 \\ 0 & 1
+\end{pmatrix}\quad \text{ y } \quad b_1 = 1 \ \text{($m = 1$)}.$$
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo 1 (cont.)}
+
+El problema dual es
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & y_1   \\
+   & \text{sujeto a: } & \quad & y_1 \Ab_1 \preceq \Cb.
+\end{alignat*}
+o equivalentemente
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & y   \\
+   & \text{sujeto a: } & \quad & \begin{pmatrix}
+2 - y & 1 \\ 1 & -y \end{pmatrix} \succeq 0.
+\end{alignat*}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo 1 (cont.)}
+
+En este caso tenemos las restricciones
+$$y \le 2, \quad y \le 0 \quad \text{ y } \quad -(2-y)y - 1 \ge 0.$$
+
+Completando cuadrados obtenemos
+$$
+(y-1)^2 \ge 2,
+$$
+y el máximo valor posible de $y < 0$ es $y^\star = 1 - \sqrt{2}$.
+
+Vemos que los valores óptimos de ambos problemas coinciden y podemos verificar que se cumple la condición de holgura complementaria
+$$
+\innerTrace{(\Cb - y^\star \Ab_1 )}{\Xb^\star} = \innerTrace{
+\begin{pmatrix}
+1 + \sqrt{2} & 1 \\ 1 & \sqrt{2} - 1
+\end{pmatrix}}
+{\begin{pmatrix}
+\frac{2 - \sqrt{2}}{4} & -\frac{\sqrt{2}}{4} \\
+-\frac{\sqrt{2}}{4} & \frac{2 + \sqrt{2}}{4}
+\end{pmatrix}} = 0.
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: salto de dualidad positivo}
+
+Veamos a continuación otro ejemplo en el cual ambos problemas son factibles y sin embargo los valores óptimos son diferentes.
+
+\textbf{Ejemplo.}
+Para $\Xb \in \R^{3 \times 3}$ y $\alpha \ge 0$ dado, consideramos el siguiente par de problemas primal-dual
+
+\begin{multicols}{2}\noindent
+\begin{alignat*}{2}
+  & \text{minimizar: }  & \quad & \alpha x_{11}   \\
+   & \text{sujeto a: } & \quad & x_{22} = 0, \\
+   &&& x_{11} + 2 x_{23} = 1, \\
+   &&& \Xb \succeq 0.
+\end{alignat*}
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & y_2   \\
+   & \text{sujeto a: } & \quad & \begin{pmatrix}
+\alpha - y_2 & 0 & 0 \\ 0 & -y_1 & -y_2 \\ 0 & -y_2 & 0 \end{pmatrix} \succeq 0.
+\end{alignat*}
+\end{multicols}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: salto de dualidad positivo}
+
+Para el problema primal, como $x_{22}=0$ y $\Xb \succeq 0$, todas las coordenadas de $\Xb$ en la segunda fila y segunda columna deben ser 0.
+
+Por lo tanto,
+$$0 = x_{23} = \frac{1 - x_{11}}{2}$$ y obtenemos $x_{11} = 1$.
+
+La única solución factible del problema es
+$$
+\Xb = \begin{pmatrix}
+1 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix}$$
+y el costo óptimo es $\alpha$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: salto de dualidad positivo}
+
+Para el problema dual, debe ser $y_2 = 0$ y tomando cualquier $y_1 \ge 0$ obtenemos una solución factible.
+
+El costo óptimo es por lo tanto 0 y el salto de dualidad es
+$$p^\star - d^\star = \alpha - 0 = \alpha.$$
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: problema sin solución óptima}
+
+Analizamos ahora otra situación que puede darse en la que si bien los costos óptimos coinciden, los problemas pueden no tener solución óptima.
+
+\textbf{Ejemplo.}
+Para $\Xb \in \R^{2 \times 2}$, consideramos el siguiente par de problemas primal-dual
+\begin{multicols}{2}\noindent
+\begin{alignat*}{2}
+  & \text{minimizar: }  & \quad & x_{11}   \\
+   & \text{sujeto a: } & \quad & x_{21} = 1, \\
+   &&& \Xb \succeq 0.
+\end{alignat*}
+\begin{alignat*}{2}
+  & \text{maximizar: }  & \quad & y   \\
+   & \text{sujeto a: } & \quad & \begin{pmatrix}
+ 1 & -\frac{y}{2}  \\ -\frac{y}{2} & 0 \end{pmatrix} \succeq 0.
+\end{alignat*}
+\end{multicols}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: problema sin solución óptima}
+
+\textbf{SDP-P.} Para el problema primal, la restricción
+$\begin{pmatrix} x_{11} & 1 \\ 1 & x_{22}\end{pmatrix} \succeq 0$
+se cumple si
+$$x_{11} \ge 0, \quad x_{22} \ge 0, \quad x_{11}x_{22} \ge 1.$$
+El costo óptimo es $p^\star = 0$ pero no existe ningún valor de $(x_{11}, x_{22})$ para el cuál se alcance el ínfimo.
+
+\textbf{SDP-D.} Para el problema dual, debe ser $\frac{y}{2} = 0$.
+
+Por lo tanto, el costo óptimo es $d^\star = 0$ que se alcanza para la solución factible $y = 0$.
+
+Vemos que si bien el salto de dualidad $p^\star - d^\star = 0$, no existen $\Xb$ e $\yb$ que cumplan la condición de holgura complementaria.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Problemas estrictamente factibles}
+
+En cierto sentido, estos últimos ejemplos son patológicos. Bajo condiciones generales la dualidad fuerte también se cumple en programación semidefinida.
+
+Una de tales condiciones es requerir que los problemas sean \emph{estrictamente factibles}.
+
+\begin{itemize}
+\item En el problema primal, esto significa que existe $\Xb \succ 0$ que verifica las restricciones.
+\item En el problema dual, esto significa que existe $\yb \in \R^m$ tal que $\Cb - \sum_{i=1}^m y_i \Ab_i \succ 0$.
+\end{itemize}
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Dualidad fuerte}
+
+Si los problemas son estrictamente factibles, la situación es tan buena como en programación lineal.
+
+\begin{theorem}[dualidad fuerte] Suponemos que tanto el problema primal $\eqref{sdp-p}$ como el problema dual $\eqref{sdp-d}$ son estrictamente factibles. Entonces ambos problemas tienen solución óptima, y el costo óptimo coincide. Es decir, no hay salto de dualidad.
+\end{theorem}
+
+\textbf{Demostración.} Ver \cite[Teorema 4.1]{Todd2001}.
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Referencias}
+
+\bibliographystyle{apalike}
+\bibliography{../../latex/optimizacion}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\end{document} 

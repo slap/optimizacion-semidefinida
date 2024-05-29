@@ -1,0 +1,720 @@
+\documentclass[aspectratio=169,12pt,spanish]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+\usepackage{wrapfig}
+
+%\usepackage{multicol}
+%\usepackage{mathtools}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{pgf,tikz}
+\usetikzlibrary{matrix}
+\usetikzlibrary{arrows}
+
+%\usepackage{wrapfig}
+\mode<presentation>
+\usefonttheme{professionalfonts}
+\usetheme{Darmstadt}
+\usecolortheme{orchid}
+\useoutertheme{default}
+\setbeamertemplate{headline}{}
+
+\newcounter{savedenum}
+\newcommand*{\saveenum}{\setcounter{savedenum}{\theenumi}}
+\newcommand*{\resume}{\setcounter{enumi}{\thesavedenum}}
+
+\renewcommand{\baselinestretch}{1.1}
+
+%gets rid of bottom navigation bars
+\setbeamertemplate{footline}[page number]
+
+%gets rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+%\frameframe{none} % No default frame
+
+%\setlength{\framewidth}{8.7in} \setlength{\frameheight}{7.2in}
+
+\parindent 0pt
+\setlength{\parskip} {1ex plus 0.5ex minus 0.2ex}
+
+
+\usepackage[bbgreekl]{mathbbol}
+\usepackage{amssymb, amsthm, amsmath}
+\usepackage{bm}
+
+\newtheorem{ejercicio}{Ejercicio}
+
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+\DeclareSymbolFontAlphabet{\mathbbl}{bbold}
+
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{lmodern}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{stmaryrd}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\graphicspath{ {../../images} }
+\input{../../latex/preamble}
+
+\pagestyle{empty}
+
+\begin{document}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+ \begin{center}
+
+\Large\textbf{Optimización Semidefinida} \\
+\large\textbf{Clase 03 - El método simlex}
+%\vspace{0.5cm}
+
+% \textit{Santiago Laplagne} \\
+%slaplagn@dm.uba.ar \\
+
+
+%\vspace{0.5cm}
+%{\small Trabajo en progreso en conjunto con \emph{Jose Capco} (Universit\"at Innsbruck) y \emph{Claus Scheiderer} %(Universit\"at Konstanz).} \\
+
+\vspace{1cm}
+ Segundo Cuatrimestre 2021
+ \\
+ {\small Facultad de Ciencias Exactas y Naturales, UBA}
+ \end{center}
+
+\end{frame}
+
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conceptos generales de optimización}
+
+\begin{itemize}
+\item Muchos métodos de optimización se basan en un principio simple que consiste en comenzar en una solución factible cualquiera e intentar moverse a otra solución factible cercana de forma que se reduzca el costo de la función a minimizar. Si no existe ninguna solución cercana que permita mejorar la función, hemos alcanzado un mínimo local.
+\item En general, un mínimo local no tiene por qué ser un mínimo global, una función podría tener varios mínimos locales, y el mínimo global ser solo uno de ellos.
+\item En programación lineal un mínimo local es también global, dado que estamos minimizando una función convexa sobre un conjunto convexo.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Propiedad fundamental de programación lineal}
+
+El método Simplex es uno de los métodos más usados en la práctica para resolver problemas de programaci\'on lineal y se basa en aprovechar una propiedad adicional de la programación lineal:
+\begin{block}{}
+Si existe un mínimo, éste se alcanza en un vértice del poliedro de puntos factibles. 
+\end{block}{}
+
+Veremos que 
+\begin{itemize}
+\item si estamos parados en un vértice, alcanza verificar si la función objetivo decrece al movernos a alguno de los vértices vecinos. 
+\item si no decrece en ninguno de los vértices vecinos, hemos encontrado un mínimo local y por lo tanto global. 
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Esquema del método simplex}
+
+Obtenemos el siguiente algoritmo para minimizar una funcional $\inner{\cb}{\xb}$ sobre un poliedro $P$:
+\begin{enumerate}
+\item Elegir un vértice $\xb$ del poliedro $P$.
+\item Para cada uno de los vértices vecinos $\{\yb_1, \dots, \yb_s\}$ de $\xb$ verificar si la función objetivo mejora en esos puntos.
+\item Si no mejora en ninguno de los puntos, $\xb$ es un óptimo global y finalizamos el procedimiento.
+\item Si encontramos $\yb_j$ tal que $\inner{\cb}{\yb_j} < \inner{\cb}{\xb}$, tomamos $\xb = \yb_j$ y volvemos a comenzar.
+\end{enumerate}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Problema en forma estándar}
+
+Para todo el desarrollo del método simplex, vamos a considerar el problema en forma estándar
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \inner{\cb}{\xb} \\
+   & \text{sujeto a: } & \quad & \Ab\xb = \bb, \\
+   & & & \xb \ge 0.
+\end{alignat*}
+
+con $\Ab \in \R^{m \times n}$ matriz de rango $m \le n$.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Soluciones adyacentes}
+
+Dos soluciones básicas de un conjunto de restricciones lineales en $\R^n$ se dicen \emph{adyacentes} si existen $n-1$ restricciones linealmente independientes que están activas en ambas soluciones. 
+
+Si las dos soluciones son factibles, llamamos \emph{arista} del conjunto factible al segmento que las une.
+
+\begin{ejercicio}
+Sea $P = \{\xb \in \R^n \mid \inner{\ab_i}{\xb} \ge b_i,  1 \le i \le m\}$ un poliedro y $\ub$, $\vb$ dos soluciones básicas factibles adyacentes, con $\inner{\ab_i}{\ub} = \inner{\ab_i}{\vb} = b_i$ para $1 \le i \le n-1$ y $\{\ab_1, \dots, \ab_{n-1}\}$ vectores linealmente independientes.
+Probar que el segmento $L = \{\lambda \ub + (1-\lambda)\vb \mid 0 \le \lambda \le 1\}$ que une $\ub$ y $\vb$ verifica
+$$
+L = \{\zb \in P \mid \inner{\ab_i}{\zb} = b_i, 1\le i \le n-1\}.
+$$
+\end{ejercicio}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Direcciones básicas}
+
+\begin{itemize}
+\item Para movernos de una solución dada a una adyacente, podríamos reemplazar alguna de las variables básicas por una variable no-básica y calcular la nueva solución básica. 
+\item Sin embargo, vamos a ver que al elegir cuál es la variable no-básica que vamos a convertir en básica, esto ya determina la dirección en la que debemos movernos para desplazarnos a una solución adyacente. \pause
+\item En efecto, al permitir una nueva variable no-nula, tendremos un sistema de $m+1$ ecuaciones y $m$ incógnitas, cuyas soluciones forman una recta afín.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Coordenadas de una solución básica}
+
+
+Sea $\xb$ una solución básica factible de un problema en forma estándar y sean $B = \{B(1), \dots, B(m)\}$ los índices de las variables básicas. 
+
+Sea $\Bb = (\Ab_{B(1)} \cdots \Ab_{B(m)}) \in \R^{m \times m}$ la correspondiente matriz base. 
+
+En particular $x_i = 0$ para cada variable no-básica y  podemos calcular las coordenadas correspondientes a variables básicas por la fórmula
+$$
+\xb_{B} = \Bb^{-1}\bb.
+$$
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Direcciones básicas}
+
+Para movernos a una solución adyacente en la que una variable no-básica $x_j$ pase a ser variable básica, debemos desplazarnos a un nuevo vector $$\xb + \theta \db$$ 
+con $\theta > 0$ y $\db = (d_1, \dots, d_n)$ con $d_j =1$ y $d_i = 0$ para todos los índices $i$ distintos de $j$ de variables no-básicas. 
+
+El vector $\xb_B$ de variables básicas va a cambiar a $\xb_B + \theta \db_B$ con $\db_B = (d_{B(1)}, \dots, d_{B(m)})$.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Direcciones básicas}
+
+Como solo nos interesan las soluciones básicas factibles, debe cumplirse
+$$
+\Ab(\xb + \theta \db) = \bb,
+$$
+y como $\xb$ también es factible, $\Ab \xb = \bb$. Por lo tanto debe cumplirse $\Ab \db = \cero$ y esto nos permite calcular $\db_B$. En efecto,
+$$
+\cero = \Ab \db = \sum_{i=1}^n \Ab_i d_i = \sum_{i=1}^m \Ab_{B(i)} d_{B(i)} + \Ab_j = \Bb \db_B + \Ab_j,$$
+donde $\Ab_i$ es la $i$-ésima columna de $\Ab$.
+
+Como la matriz $\Bb$ es inversible, obtenemos
+$$
+\db_B = -\Bb^{-1} \Ab_j.
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Direcciones básicas}
+
+\begin{itemize}
+\item Llamamos \emph{$j$-ésima dirección básica} al vector $\db$ que acabamos de construir. 
+\item Por construcción, las restricciones de igualdad se van a mantener si nos movemos en esta dirección. 
+\item Para las condiciones de no-negatividad de las variables, recordemos que la variable no-básica $x_j$ aumenta y las demás variables no-básicas se mantienen en 0, por lo tanto conservan la no-negatividad. 
+\item Para las variables básicas, como estamos suponiendo que todas las soluciones son no-degeneradas, las variables básicas son todas positivas y podemos tomar $\theta$ suficientemente pequeño para que se sigan siendo positivas.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Costo reducido}
+
+Antes de calcular el valor de $\theta$ apropiado para movernos a una solución adyacente, calculamos cómo varía el costo de la función a optimizar al desplazarnos en la dirección de la $j$-ésima dirección básica.
+
+Si $\db$ es la $j$-ésima dirección básica, la razón $\inner{\cb}{\db}$ de cambio del costo en la dirección $\db$ está dada por
+$$
+\inner{\cb}{\db} = \inner{\cb_B}{\db_B} + c_j,
+$$
+donde $\cb_B = (c_{B(1)}, \dots, c_{B(m)})$. 
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Costo reducido}
+
+Utilizando que $\db_B = -\Bb^{-1}\Ab_{j}$, hacemos la siguiente definición.
+
+\begin{definition}
+Sea $\xb$ una solución básica asociada a una matriz base  $\Bb$, y sea $\cb_B$ el vector de costos de las variables básicas. Para cada $j$, definimos el \emph{costo reducido} $\bar c_j$ de la variable $x_j$ por la fórmula
+$$
+\bar c_j = c_j - \inner{\cb_B}{(\Bb^{-1}\Ab_{j})}.
+$$
+\end{definition}
+
+El costo reducido nos dice cuánto varía la función de costo al movernos una unidad en la dirección de la $j$-ésima dirección básica. El término $c_j$ indica el aumento del costo por unidad de la variable $x_j$ y el último término es el costo de modificar las demás variables para compensar el cambio en la variable $x_j$.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo}
+
+Consideremos el problema de programación lineal
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \inner{\cb}{\xb} \\
+   & \text{sujeto a: } & \quad & \Ab\xb = \bb \\
+   & & & \xb \ge 0,
+\end{alignat*}
+con
+$$\cb = (2, 0, 0, 0) \in \R^4, \quad 
+\Ab = \begin{pmatrix}
+1 & 1 & 1 & 1 \\
+2 & 0 & 3 & 4
+\end{pmatrix} \in \R^{2 \times 4}
+\quad \text{ y } \quad \bb = \begin{pmatrix} 2 \\ 2 \end{pmatrix} \in \R^2.
+$$
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo (cont.)}
+
+Las primeras dos columnas de $\Ab$ son $\Ab_1 = (1,2)$ y $\Ab_2 = (1, 0)$. Como son linealmente independientes podemos elegir $x_1$ y $x_2$ como variables básicas. La matriz base correspondiente es
+$$
+\Bb = \begin{pmatrix} 1 & 1 \\ 2 & 0 \end{pmatrix}.
+$$
+
+Tomamos $x_3 = x_4 = 0$, y calculamos los valores de $x_1$ y $x_2$: $x_1 = 1$ y $x_2 = 1$. Luego $\xb = (1, 1, 0, 0)$ es una solución básica factible no-degenerada.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo (cont.)}
+
+Construimos una dirección básica $\db$ correspondiente a aumentar el valor de la variable $x_3$. Tenemos $d_3 = 1$ y $d_4 = 0$. Las coordenedas de $\db$ correspondientes a las variables básicas las obtenemos por la fórmula
+$$
+\begin{pmatrix} d_1 \\ d_2 \end{pmatrix} =
+\begin{pmatrix} d_{B(1)} \\ d_{B(2)} \end{pmatrix} =
+\db_B = -\Bb^{-1} \Ab_3 =
+-\begin{pmatrix} 0 & \frac{1}{2} \\ 1 & -\frac{1}{2} \end{pmatrix}
+\begin{pmatrix} 1 \\ 3 \end{pmatrix} =
+\begin{pmatrix} -\frac{3}{2} \\ \frac{1}{2} \end{pmatrix}.
+$$
+
+Por lo tanto $\db = \left(-\frac{3}{2}, \frac{1}{2}, 1, 0 \right)$ y el costo de movernos en esta dirección es
+$$\bar c_3 = \inner{\cb}{\db} = -\frac{3}{2} c_1 + \frac{1}{2}c_2 + c_3 = -3.$$
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Costos reducidos de las variables básicas}
+
+Calculamos el costo reducido de las variables básicas aplicando la definición. Consideramos $x_{B(i)}$.
+
+Como $\Bb^{-1} \Bb = \Ib$, 
+$$\Bb^{-1} \Ab_{B(i)} = \eb_i,$$
+el $i$-ésimo vector canónico. Por lo tanto, 
+$$
+\bar c_{B(i)} = c_{B(i)} - \inner{\cb_B}{\Bb^{-1} \Ab_{B(i)}} = c_{B(i)} - \inner{\cb_B}{\eb_i} = c_{B(i)} - c_{B(i)} = 0,
+$$
+y comprobamos que el costo reducido de las variables básicas es 0.
+
+
+\end{frame}
+
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Costos reducidos y soluciones óptimas}
+
+El siguiente resultado confirma la idea intuitiva que tenemos de los costos reducidos y es la clave del método simplex.
+
+\vspace{0.5cm}
+
+\begin{theorem}
+Sea $\xb$ una solución básica factible asociada a una matriz base $\Bb$, y sea $\bar \cb$ el vector de costos reducidos.
+\begin{enumerate}
+\item Si $\bar \cb \ge 0$, entonces $\xb$ es una solución óptima.
+\item Si $\xb$ es una solución óptima no-degenerada, entonces $\bar \cb \ge 0$.
+\end{enumerate}
+\end{theorem}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Desplazamiento máximo}
+
+Por último, si encontramos una dirección básica en la cual movernos para reducir el costo, debemos calcular el mayor valor de $\theta$ que podemos tomar, lo que equivale a determinar
+$$
+\theta^\star = \max\{\theta \ge 0 \mid \xb + \theta \db \in P\}.
+$$
+
+Vamos a deducir una fórmula para $\theta^\star$. Como $\Ab \db = \cero$, tenemos que
+$$
+\Ab (\xb + \theta \db) = \Ab \xb = \bb
+$$
+para todo $\theta$, por lo tanto las restricciones de igual se cumplen siempre. 
+
+El punto $\xb + \theta \db$ solo puede salirse del poliedro si alguna de las coordenadas se vuelve negativa.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Desplazamiento máximo}
+
+Distinguimos dos casos:
+
+\begin{enumerate}
+\item Si $\db \ge 0$ (es decir, $d_i \ge 0$ para todo $1 \le i \le n$), entonces $\xb + \theta \db \ge 0$ para todo $\theta \ge 0$. El vector $\xb + \theta \db$ nunca se vuelve no-factible, y tomamos $\theta^\star = +\infty$. El costo óptimo es $-\infty$.
+
+\item Si $d_i < 0$ para algunos $i$, la restricción $x_i + \theta d_i > 0$ nos da la restricción
+$$
+\theta \le -\frac{x_i}{d_i}.
+$$
+Estas restricciones se deben cumplir para todo $i$ tal que $d_i < 0$. Por lo tanto el mayor valor de $\theta$ que podemos tomar es
+$$
+\theta^\star = \min_{\{i \mid d_i < 0 \}}\left(-\frac{x_i}{d_i}\right).
+$$
+\end{enumerate}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Desplazamiento máximo}
+
+
+Recordemos que para las variables $x_i$ no-básicas, 
+\begin{itemize}
+\item o bien $d_i = 1$ si es la variable que pasa a ser variable básica, 
+\item o bien $d_i = 0$.
+\end{itemize}
+
+En ambos casos $d_i \ge 0$, por lo tanto podemos restringirnos a mirar las variables básicas en la fórmula anterior. Obtenemos
+\begin{equation}
+\label{eq:thetastar}
+\theta^\star = \min_{\{i = 1, \dots, m \mid d_{B(i)} < 0 \}}\left(-\frac{x_{B(i)}}{d_{B(i)}}\right).
+\end{equation}
+
+Más aún, como supusimos que todas las soluciones son no-degeneradas, $x_i > 0$ para todas las variables básicas, y por lo tanto obtenemos siempre $\theta^\star > 0$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo (cont.)}
+
+Continuamos el ejemplo. Obtuvimos 
+$$\xb = (1, 1, 0, 0), \quad \db = (-3/2, 1/2, 1, 0)\quad \text{ y } \quad \bar c_3 = -3.$$ 
+Como $\bar c_3$ es negativo, podemos disminuir el costo de la función objetivo desplazándonos en esta dirección. Es decir, consideramos los vectores
+$$
+\xb + \theta \db,
+$$
+con $\theta > 0$. 
+
+La única coordenada que decrece al desplazarnos es $x_1$, por lo que si tomamos cualquier valor de $\theta > 0$ tal que la primera coordenada se mantenga no-negativa, estaremos dentro del poliedro. 
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo (cont.)}
+
+El máximo valor de $\theta$ que podemos tomar es
+$$
+\theta^\star = -\frac{x_1}{d_1} = \frac{2}{3},
+$$
+y nos desplazamos a
+$$
+\yb = \xb + \frac{2}{3} \db = \left(0, \frac{4}{3}, \frac{2}{3}, 0\right).
+$$
+
+Las columnas correspondientes a las coordenadas no-nulas son $\Ab_2 = (1, 0)$ y $\Ab_3 = (1,3)$, y son linealmente independientes. Por lo tanto $\yb$ es una nueva solución básica factible. Como queríamos minimizar el valor de $x_1$, y tenemos la restricción $x_1 \ge 0$, hemos encontrado el costo óptimo.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo (cont.)}
+
+Para verificación, calculamos el costo reducido $\bar c_4$ por la fórmula
+$$
+\bar c_4 = c_4 - \inner{\cb_B}{(\Bb^{-1} \Ab_4)} = 1 - \begin{pmatrix} 1 & 0 \end{pmatrix} \begin{pmatrix} 1 & 1 \\ 0 & 3 \end{pmatrix}^{-1}
+\begin{pmatrix} 1 \\ 4 \end{pmatrix} = \frac{4}{3}.
+$$
+
+Vemos que movernos en la dirección básica correspondiente va a incrementar el valor de la función objetivo y por lo tanto no debemos desplazarnos en esa dirección.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Nueva solución básica factible}
+
+Una vez que determinamos $\theta^\star$, suponiendo que es finito, nos movemos a una nueva solución factible
+$$
+\yb = \xb + \theta^\star \db.
+$$
+
+Por la construcción que hicimos de $\db$ y $\theta^\star$, si $\ell$ es el índice que minimiza la fórmula (\ref{eq:thetastar}) de $\theta^\star$ (es decir, $\theta^\star = -x_{B(\ell)} / d_{B(\ell)}$), se cumple
+$$
+x_{B(\ell)} = 0 \quad \text{ y } \quad x_j = \theta^\star.
+$$
+
+Obtenemos que $x_j$ reemplaza a $x_{B(\ell)}$ en el conjunto de variables básicas. El nuevo conjunto de índices de las variables básicas es $\bar B = \{\bar B(1), \dots, \bar B(m)\}$, con
+$$
+\bar B(i) = \begin{cases}
+B(i), & i \neq \ell,\\
+j, &i = \ell.
+\end{cases}
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Nueva solución básica factible}
+
+Llamamos $\bar \Bb$ a la nueva matriz base, formada por las columnas de $\Ab$ correspondientes a las nuevas variables básicas.
+
+\begin{theorem}
+\begin{enumerate}
+\item Las columnas $\Ab_{B(i)}$, $i \neq \ell$, y $\Ab_j$ son linealmente independientes y, por lo tanto, $\bar \Bb$ es una matriz base.
+\item El vector $\yb = \xb + \theta^\star \db$ es una solución básica factible con matriz base asociada $\bar \Bb$.
+\end{enumerate}
+\end{theorem}
+
+\textbf{Demostración.} Ver \cite[Teorema 3.2]{Bertsimas1997}.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Algortimo del método simplex}
+
+Mediante el procedimiento descripto, pasamos de una solución básica factible a otra solución básica factible con menor costo.
+Obtenemos la siguiente iteración del método simplex.
+
+\begin{enumerate}
+\item Comenzamos con una solución básica factible $\xb$, correspondiente a variables básicas con índices $I = \{B(1), \dots, B(m)\}$.
+\item Tomamos la submatriz $\Bb$ de $\Ab$ formada por las columnas correspondientes a las variables básicas, y calculamos los costos reducidos
+    $$\bar c_j = c_j - \inner{\cb_B}{(\Bb^{-1} \Ab_j)}, \quad j \not\in I.$$
+Si todos los costos son no-negativos, $\xb$ es una solución óptima y terminamos. Si no, elegimos algún $j$ tal que $\bar c_j < 0$.
+\saveenum
+\end{enumerate}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Algortimo del método simplex}
+
+\begin{enumerate}
+\resume
+\item Calculamos $\ub = -\db_B = \Bb^{-1} \Ab_j$. Si $\ub$ no tiene ninguna componente positiva, tomamos $\theta^\star = \infty$, el costo óptimo es $-\infty$ y el algoritmo termina.
+\item Si alguna componente de $\ub$ es positiva, tomamos
+$$
+\theta^\star = \min_{\{i = 1, \dots, m \mid u_i > 0\}} \frac{x_{B(i)}}{u_i}.
+$$
+\item Sea $\ell$ un índice para el cuál se alcanza el mínimo. Construimos una nueva base reemplazando $B(\ell)$ por $j$. La nueva variable básica $\yb$ queda definida por
+    $$
+    \begin{cases}
+    y_j = \theta^\star, \\
+    y_{B(i)} = x_{B(i)} - \theta^\star u_i, & 1 \le i \le m, i \neq l \\
+    y_i = 0 & \text{ para los índices de variables no-básicas.}
+    \end{cases}
+    $$
+\end{enumerate}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Puntos extremales y soluciones óptimas}
+
+En base a todo lo que vimos es fácil verificar que el método simplex descripto resuelve correctamente el problema de programación lineal.
+
+Completando el método para considerar soluciones degeneradas, podemos demostrar la siguiente propiedad de los problemas de programación lineal.
+
+\vspace{0.5cm}
+
+\begin{theorem}
+Consideremos el problema de programación lineal de minimizar una funcional $\inner{\cb}{\xb}$ sobre un poliedro $P$. Si $P$ tiene al menos un punto extremal entonces o bien el costo óptimo es $-\infty$ o bien existe un punto extremal que es óptimo.
+\end{theorem}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Existencia de puntos extremales}
+
+En general los poliedros pueden no tener puntos extremales. Por ejemplo, un semiplano en $\R^2$ no tiene puntos extremales.
+Una condición muy simple para determinar si un poliedro tiene puntos extremales es la existencia o no de líneas rectas incluidas en el poliedro.
+
+Decimos que un poliedro $P \subset \R^n$ contiene una recta si existe un vector $\xb \in P$ y una dirección $\db \in \R^n$ tales que $\xb + \lambda \db \in P$ para todo $\lambda \in \R$.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Existencia de puntos extremales}
+
+\begin{theorem}
+Dado un poliedro $P = \{\xb \in \R^n \mid \inner{\ab_i}{\xb} \ge b_i, i = 1, \dots, m\}$, las siguientes condiciones son equivalentes.
+
+\begin{enumerate}
+\item El poliedro $P$ contiene al menos un punto extremal.
+\item El poliedro $P$ no contiene ninguna recta.
+\item Existen $n$ vectores linealmente independientes entre los vectores $\ab_1, \ab_2, \dots, \ab_m$.
+\end{enumerate}
+\end{theorem}
+
+\textbf{Demostración.} \cite[Teorema 2.6]{Bertsimas1997}.
+
+En particular, cualquier poliedro acotado tiene puntos extremales y cualquier poliedro en forma estándar tiene puntos extremales, debido a que el ortante positivo $\{x_i \ge 0, 1 \le i \le n\}$ no contiene ninguna recta.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Referencias}
+
+\bibliographystyle{apalike}
+\bibliography{../../latex/optimizacion}
+
+\end{frame}
+
+\end{document}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Existencia de solución óptima}
+
+
+Ahora que ya vimos condiciones para que un poliedro tenga puntos extremales, podemos preguntarnos en qué casos un problema de programación lineal tiene soluciones óptimas y verificar que se alcanzan en los puntos extremales, como vimos intuitivamente en los ejemplos.
+
+\begin{theorem}
+Consideremos el problema de programación lineal de minimizar una funcional $\inner{\cb}{\xb}$ sobre un poliedro $P$. Si $P$ tiene al menos un punto extremal y el problema tiene solución óptima, entonces existe una solución óptima que es un punto extremal.
+\end{theorem}
+
+\textbf{Demostración.}
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Existencia de punto extremal óptimo}
+
+Más aún, si el costo óptimo de la función a optimizar es finito, entonces siempre existe solución óptima.
+
+\begin{theorem}
+Consideremos el problema de programación lineal de minimizar una funcional $\inner{\cb}{\xb}$ sobre un poliedro $P$. Si $P$ tiene al menos un punto extremal entonces o bien el costo óptimo es $-\infty$ o existe un punto extremal que es óptimo.
+\end{theorem}
+
+\textbf{Demostración.} Ver \cite[Teorema 2.8]{Bertsimas1997}.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{}
+
+\end{frame}
+

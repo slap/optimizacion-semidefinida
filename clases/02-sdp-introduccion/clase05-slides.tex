@@ -1,0 +1,907 @@
+\documentclass[aspectratio=169,12pt,spanish]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+\usepackage{wrapfig}
+
+%\usepackage{multicol}
+%\usepackage{mathtools}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{pgf,tikz}
+\usetikzlibrary{matrix}
+\usetikzlibrary{arrows}
+
+%\usepackage{wrapfig}
+\mode<presentation>
+\usefonttheme{professionalfonts}
+\usetheme{Darmstadt}
+\usecolortheme{orchid}
+\useoutertheme{default}
+\setbeamertemplate{headline}{}
+
+\newcounter{savedenum}
+\newcommand*{\saveenum}{\setcounter{savedenum}{\theenumi}}
+\newcommand*{\resume}{\setcounter{enumi}{\thesavedenum}}
+
+\renewcommand{\baselinestretch}{1.1}
+
+%gets rid of bottom navigation bars
+\setbeamertemplate{footline}[page number]
+
+%gets rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+%\frameframe{none} % No default frame
+
+%\setlength{\framewidth}{8.7in} \setlength{\frameheight}{7.2in}
+
+\parindent 0pt
+\setlength{\parskip} {1ex plus 0.5ex minus 0.2ex}
+
+
+\usepackage[bbgreekl]{mathbbol}
+\usepackage{amssymb, amsthm, amsmath}
+\usepackage{bm}
+
+\newtheorem{ejercicio}{Ejercicio}
+\newtheorem{proposition}[theorem]{Proposición}
+
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+\DeclareSymbolFontAlphabet{\mathbbl}{bbold}
+
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{lmodern}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{stmaryrd}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\graphicspath{ {../../images} }
+\input{../../latex/preamble}
+
+\pagestyle{empty}
+
+\begin{document}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+ \begin{center}
+
+\Large\textbf{Optimización Semidefinida} \\
+\large\textbf{Clase 05 - SDP / Preliminares}
+%\vspace{0.5cm}
+
+% \textit{Santiago Laplagne} \\
+%slaplagn@dm.uba.ar \\
+
+
+%\vspace{0.5cm}
+%{\small Trabajo en progreso en conjunto con \emph{Jose Capco} (Universit\"at Innsbruck) y \emph{Claus Scheiderer} %(Universit\"at Konstanz).} \\
+
+\vspace{1cm}
+ Segundo Cuatrimestre 2021
+ \\
+ {\small Facultad de Ciencias Exactas y Naturales, UBA}
+ \end{center}
+
+\end{frame}
+
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conos}
+
+Un subconjunto $\CC$ de un espacio vectorial real $V$ es un \emph{cono convexo} si es cerrado por combinaciones lineales positivas. Es decir,
+\begin{enumerate}
+\item Si $\xb \in \CC$ y $a \ge 0$, entonces $a\xb \in \CC$.
+\item Si $\xb, \yb \in \CC$, entonces $\xb + \yb \in \CC$.
+\end{enumerate}
+
+En este apunte siempre que hablemos de \emph{conos} vamos a referirnos a conos convexos.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conos puntiagudos y cono dual}
+
+Decimos que un cono es \emph{puntiagudo} si
+$$
+\xb  \in \CC \text{ y } -\xb \in \CC \Rightarrow \xb = 0.
+$$
+
+El \emph{cono dual} de un cono $\CC$ es
+$$
+\CC^* = \{\yb \in \R^n \mid \xb^T \yb \ge 0 \enspace \forall \xb \in \CC\}.
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Orden parcial en un cono}
+Dado un cono puntiagudo $\CC$ en $\R^n$, podemos definir un orden parcial en $\R^n$ por
+$$
+\xb \succeq \yb \iff \xb - \yb \in \CC
+$$
+para $\xb, \yb \in \R^n$. Este orden satisface las siguientes propiedades:
+\begin{itemize}
+\item \textbf{reflexividad:} $\forall \xb \in \R^n: \xb \succeq \xb$
+\item \textbf{antisimetría:} $\forall \xb, \yb \in \R^n: \xb \succeq \yb, \yb \succeq \xb \Rightarrow \xb = \yb$
+\item \textbf{transitividad:} $\forall \xb, \yb, z \in \R^n: \xb \succeq \yb, \yb \succeq \zb \Rightarrow \xb \succeq \zb$
+\item \textbf{homogeneidad:} $\forall \xb, \yb \in \R^n, \forall \alpha \in \R_{\ge 0}: \xb \succeq \yb \Rightarrow \alpha \xb \succeq \alpha \yb$
+\item \textbf{aditividad:} $\forall \xb, \yb, \xb', \yb' \in \R^n: \xb \succeq \yb, \xb' \succeq \yb' \Rightarrow \xb + \xb' \succeq \yb + \yb'$
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Desigualdad estricta}
+
+En general, nos van a interesar conos convexos de dimensión completa, es decir conos con interior no vacío. En ese caso, podemos definir la desigualdad estricta
+$$
+\xb \succ \yb \iff \xb - \yb \in \interior \CC.
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Separación}
+
+
+Tenemos el siguiente resultado de separación.
+
+\begin{lemma} Sean $\CC \subset \R^n$ un cono convexo cerrado y $\xb \in \R^n \smallsetminus \CC$ un punto fuera de $\CC$. Existe un hiperplano que separa a $\{\xb\}$ de $\CC$. Más aún, existe un vector no nulo $c \in \R^n$ tal que
+$$
+\forall \yb \in \R^n : \inner{\cb}{\yb} \ge 0 > \inner{\cb}{\xb}.
+$$
+\end{lemma}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: cono generado}
+
+\noindent\textbf{Cono generado por un conjunto de puntos.}
+El cono generado por un conjunto de puntos $A = \{\xb_1, \dots, \xb_N\} \subset \R^n$ es el menor cono que contiene a $A$. Es el cono
+$$
+\cone A = \left\{ \sum_{i=1}^N \alpha_i \xb_i \mid \alpha_1, \dots, \alpha_N \in \R_{\ge 0}\right\}.
+$$
+
+\textbf{Ejemplos.}
+\begin{itemize}
+\item El cono generado por $\{(1,0), (0,1)\} \subset \R^2$ es el conjunto de puntos $$\{(x,y) \in \R^2: x\ge 0 \text{ e } y \ge 0\}.$$
+\item El cono generado por $\{(0,1), (0, -1)\} \subset \R^2$ es la recta $$\{(x,y) \in \R^2: x = 0\}.$$
+\end{itemize}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{El ortante no-negativo}
+
+El ortante no-negativo que utilizamos en programación lineal, definido por
+$$
+\R^n_{\ge 0} = \{(x_1, \dots, x_n) \in \R^n \mid x_1, \dots, x_n \ge 0\}
+$$
+es un cono puntiagudo convexo cerrado de dimensión completa.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{El cono de matrices semidefinidas positivas.}
+
+\begin{proposition}
+El conjunto $\Splusn$ de matrices positivas semidefinidas es un cono convexo puntiagudo.
+\end{proposition}
+
+
+\textbf{Demostración.}
+Podemos escribir a $\Splusn$ como intersección de infinitos semiespacios:
+$$
+\Splusn = \{\Ab \in \Symn \mid \xb^T \Ab \xb \ge 0 \enspace \forall \xb \in \R^n\} = \bigcap_{\xb\in\R^n} \{\Ab \in \Symn \mid \xb^T \Ab \xb \ge 0\},
+$$
+y por lo tanto es un conjunto convexo cerrado.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{El cono de matrices semidefinidas positivas.}
+
+Para ver que forman un cono, si $\Ab, \Bb \succeq 0$ y $a \ge 0$, es claro que $a \Ab \succeq 0$ y también que
+$$\xb^T (\Ab + \Bb) \xb = \xb^T \Ab \xb + \xb^T \Bb \xb \ge 0$$
+ para todo $\xb \in \R^n$.
+
+Finalmente, para ver que es un cono puntiagudo, si $\Ab \in \Splusn$ y $-\Ab \in \Splusn$, todos los autovalores de $\Ab$ son $0$. Como $\Ab$ es simétrica, el teorema espectral para matrices simétricas implica que $\Ab$ es la matriz nula.
+
+En particular: la suma de matrices semidefinidas positivas es semidefinida positiva y una combinación convexa también.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{El interior del cono de matrices semidefinidas positivas}
+
+\begin{proposition}
+El interior del cono $\Splusn$ de matrices semidefinidas positivas es $\Splusplusn$, el conjunto de matrices definidas positivas.
+
+En particular, $\Splusn$ es un cono de dimensión completa.
+\end{proposition}
+
+
+\textbf{Demostración.}
+Ver \cite[Teorema 3.1]{Fawzi2018}.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Desigualdades lineales matriciales}
+
+
+\begin{definition}
+  Una desigualdad lineal matricial (LMI por su nombre en inglés) tiene la forma
+  $$\Ab_0 + \sum_{i = 1}^m \Ab_i y_i \succeq 0,$$
+  con $\Ab_i \in \Sym^n$ matrices simétricas dadas.
+\end{definition}
+
+Un conjunto de desigualdades matriciales definen un espectrahedro.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Espectrahedros}
+
+\begin{definition}
+Un conjunto $S \subset \R^m$ es un espectrahedro si es de  la forma
+$$
+S = \left\{ (y_1, \dots, y_m) \in \R^m : \Ab_0 + \sum_{i = 1}^m \Ab_i y_i \succeq 0\right\},
+$$
+para matrices simétricas $\Ab_0, \Ab_1, \dots, \Ab_m \in \Sym^n$.
+\end{definition}
+
+\textbf{Ejemplo.}
+$$
+S = \left\{ y \in \R : \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix} + y \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \succeq 0\right\},
+$$
+define el conjunto \pause $S = [-1, 1]$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Escritura alternativa}
+
+Observamos que podemos escribir una desigualdad matricial lineal mediante una sola matriz
+$$\Ab(y_1, \dots, y_m) = \Ab_0 + \sum_{i = 1}^m \Ab_i y_i \succeq 0,$$
+donde las coordenadas de $\Ab(y_1, \dots, y_m)$ son expresiones lineales afines en las variables $y_1, \dots, y_m$.
+
+En el ejemplo anterior obtenemos
+$$
+S = \left\{ y \in \R : \begin{pmatrix} 1 & y \\ y & 1 \end{pmatrix} \succeq 0\right\}.
+$$
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Poliedros y espectrahedros}
+
+\textbf{Ejemplo.}
+Todos los poliedros son espectrahedros.
+
+Para una matriz $\Xb \in \Rnn$ diagonal,
+$$\Xb \succeq 0 \text{ si y solo si } x_{ii} \ge 0 \text{ para todo } 1 \le i \le n.$$
+
+Por lo tanto, podemos describir al poliedro $S = \{\xb: \Ab \xb \le \bb\}$ como \pause
+$$
+S = \left\{ (x_1, \dots, x_n) \in \R^n :
+\begin{pmatrix} \inner{\ab_1}{\xb} - b_1 & & \\ & \ddots & \\ & & \inner{\ab_m}{\xb} - b_m \end{pmatrix} \succeq 0
+\right\}.
+$$
+
+Sin embargo, existen espectrahedros que no son poliedros.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: el disco unidad}
+
+El disco unitario $D = \{(x,y) \in \R^2 \mid x^2 + y^2 \le 1\}$ es un espectrahedro.
+
+Podemos definirlo mediante la desigualdad matricial \pause
+$$
+D = \left\{(x,y) \in \R^2 \mid \begin{pmatrix} 1-x & y \\ y & 1+x \end{pmatrix} \succeq 0\right\}.
+$$
+
+Utilizando el criterio de los menores principales, vemos que $\begin{pmatrix} 1-x & y \\ y & 1+x \end{pmatrix} \succeq 0$ si y solo si:
+$$
+\begin{aligned}
+1-x &\ge 0, \\
+1+x &\ge 0, \\
+(1-x)(1+x)-y^2 = 1 - x^2 - y^2 &\ge 0.
+\end{aligned}
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Geometría de los espectrahedros}
+
+Geométricamente, un espectrahedro está definido por la intersección del cono $\Splus$ de matrices semidefinidas positivas con un espacio afín: el espacio generado por las matrices $\Ab_1, \dots, \Ab_m$ trasladado a $\Ab_0$.
+
+Por lo tanto, un espectrahedro es siempre un conjunto cerrado y convexo.
+
+Determinar qué conjuntos convexos son espectrahedros y cuáles no mediante un criterio sencillo es un problema abierto de investigación.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Proyección de espectrahedros}
+
+\textbf{Ejemplo.}
+El conjunto $S = \{(x,y): xy \ge 1, x \ge 0, y \ge 0\}$ es un espectrahedro (¿cómo se puede definir por desigualdades matriciales?).
+
+La proyección de $S$ sobre el eje $X$:
+$$
+\pi_x(S) = \{x \ge 0 : \exists y \ge 0 \text{ tal que } xy \ge 1\}
+$$
+no es un conjunto cerrado y por lo tanto no es un espectrahedro.
+
+Utilizando proyecciones de espectrahedros podemos ampliar la familia de conjuntos convexos sobre la que podemos resolver problemas SDP.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conjuntos semi-algebraicos}
+
+Una variedad algebraica sobre $\C$ es un subconjunto de $\C^n$ definido por ecuaciones polinomiales:
+$$
+V = \{\xb \in \C^n : p_1(\xb) = 0, \dots, p_s(\xb) = 0, p_i \in \C[X_1, \dots, X_n], 1 \le i \le s\}.
+$$
+
+Un conjunto semi-algebraico es un subconjunto de $\R^n$ definido por ecuaciones polinomiales e inecuaciones polinomiales
+$$
+S = \{\xb \in \R^n : p_i(\xb) = 0, 1 \le i \le s, q_j(\xb) > 0, 1 \le j \le t\},
+$$ o uniones finitas de estos conjuntos.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conjuntos semi-algebraicos y espectrahedros}
+
+Utilizando el criterio de los menores para matrices semidefinidas positivas, obtenemos:
+
+\textbf{Propiedad:} Los espectrahedros son conjuntos semi-algebraicos.
+
+El teorema de Tarski-Seidenberg asegura que cualquier proyección de un conjunto semi-algebraico es también un conjunto semi-algebraico, pero vimos que esto no ocurre para los espectrahedros.
+
+\textbf{Pregunta:} ¿cualquier conjunto semialgebraico convexo será la proyección de un espectrahedro?
+
+En 2016, C. Scheiderer demostró que no todo conjunto semi-algebraico convexo es la proyección de un espectrahedro.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Matriz por bloques}
+
+Dadas matrices simétricas $\Ab \in \Rn$, $\Bb \in \Rm$, definimos la matriz $\Ab \oplus \Bb$ por
+$$
+\Ab \oplus \Bb =
+\begin{pmatrix}
+\Ab & 0 \\
+0 & \Bb
+\end{pmatrix}.
+$$
+
+Se cumple: $\Ab \succeq 0$ y $\Bb \succeq 0$ si y solo si $\Ab \oplus \Bb \succeq 0$.
+
+Esto nos permite juntar varias desigualdades matriciales en una sola matriz.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Bola de norma-4}
+
+\begin{block}{Ejercicio}
+Demostrar que el conjunto
+$$D = \{(x,y) \in \R^2 \mid x^4 + y^4 \le 1\}$$
+es un espectrahedro.
+\end{block}
+
+Sugerencia:
+$$
+x^4 + y^4 \le 1 \iff \exists u, v \text{ tales que } x^2 \le u, y^2 \le v, u^2 + v^2 \le 1.
+$$
+
+\end{frame}
+
+
+
+%------------------------------------------------------------------
+
+
+\begin{frame}
+
+\frametitle{Producto interno traza}
+
+Para plantear los problemas de programación semi-definida en forma análoga a un problema de programación lineal, introducimos la siguiente notación.
+
+Para matrices $\Xb, \Yb \in \R^{n \times n}$, llamamos \emph{producto interno traza} al producto
+$$
+\innerTrace{\Xb}{\Yb} = \Tr(\Xb^T \Yb) = \sum_{i=1}^n\sum_{j=1}^n x_{ij} y_{ij}, \quad \text{donde } \Tr(\Ab) = \sum_{i=1}^n a_{ii},
+$$
+que coincide con el producto interno usual pensado a $\Xb$ e $\Yb$ como vectores de $n \times n$ coordenadas.
+
+Con este producto interno, $\R^{n \times n}$ resulta un espacio euclídeo.
+
+Se cumplen las siguientes propiedades:
+\begin{enumerate}
+\item $\innerTrace{\Xb}{\Yb} = \innerTrace{\Yb}{\Xb}$,
+\item $\innerTrace{\Xb}{\Ib} = \innerTrace{\Ib}{\Xb} = \Tr(\Xb)$.
+\end{enumerate}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Problema primal de programación semidefinida}
+
+Con la notación introducida, escribimos un problema de programación semidefinida (en forma primal) como
+\begin{alignat*}{2}
+  & \text{minimizar: } & \innerTrace{\Cb}{\Xb} & \\
+  & \text{sujeto a: }  \quad & \innerTrace{\Ab_i}{\Xb} &= b_i, \quad i = 1, \dots, m, \\
+   && \Xb &\succeq 0,
+\end{alignat*}
+donde $\Cb, \Ab_i \in \Sym^n$ (el conjunto de matrices simétricas).
+
+La matrix $\Xb \in \Sym^n$ es la variable sobre la cual realizamos la minimización.
+
+Tanto $\innerTrace{\Cb}{\Xb}$ como $\innerTrace{\Ab_i}{\Xb}, 1, \dots, m$, representan combinaciones lineales de las coordenadas de $\Xb$.
+
+Podemos ver en seguida la similitud con un problema de programación lineal.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conjunto factible}
+
+La función a minimizar es una funcional lineal exactamente igual que en programación lineal.
+
+Para describir el conjunto factible
+$$\{\Xb : \innerTrace{\Ab_i}{\Xb} = b_i, i = 1, \dots, m, \quad \Xb \succeq 0\}$$
+ mediante una desigualdad matricial lineal, podemos despejar las coordenadas de $\Xb$ como expresiones lineales en función de un conjunto de variables libres.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo}
+
+Podemos describir conjunto de matrices
+$$
+S = \left\{\Xb = \begin{pmatrix}
+x_{11} & x_{12} \\
+x_{12} & x_{22}
+\end{pmatrix} \mid x_{11} + x_{22} = 1, \Xb \succeq 0\right\}
+$$
+mediante la condición
+$$
+\begin{pmatrix}
+x_{11} & x_{12} \\
+x_{12} & 1 - x_{11}
+\end{pmatrix}  \succeq 0
+$$
+que a la vez es equivalente a la desigualdad matricial
+$$
+\begin{pmatrix}
+0 & 0 \\
+0 & 1
+\end{pmatrix}  +
+x_{11}
+\begin{pmatrix}
+1 & 0 \\
+0 & - 1
+\end{pmatrix}  +
+x_{12}
+\begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix}\succeq 0.
+$$
+
+Obtenemos $S \cong \tilde S = \left\{(y_1, y_2) \in \R^2 : \begin{pmatrix}
+0 & 0 \\
+0 & 1
+\end{pmatrix}  +
+y_1
+\begin{pmatrix}
+1 & 0 \\
+0 & - 1
+\end{pmatrix}  +
+y_2
+\begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix} \succeq 0
+\right\}$.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conjunto factible y espectrahedro}
+
+En nuestra definición, un espectrahedro $S$ es un conjunto cerrado y convexo del espacio afín $\R^m$.
+
+Siguiendo la terminología usual, llamaremos también espectrahedro al conjunto
+$$\left\{ \Ab_0 + \sum_{i = 1}^m \Ab_i y_i \succeq 0 \mid \yb \in \R^m \right\}.$$
+
+Si bien este es un conjunto de matrices y no un subconjunto de $\R^m$, si las matrices $\Ab_i$, $1 \le i \le m$, son linealmente independientes, ambos conjuntos son afínmente equivalentes.
+
+El conjunto factible de un problema de programación semi-definida es un espectrahedro.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejercicio}
+
+Resolver el siguiente problema de programación semidefinida para $\Xb \in \R^{3\times3}$:
+
+\begin{alignat*}{2}
+  & \text{minimizar: } & & 2 x_{22}+x_{11}  \\
+  & \text{sujeto a: } & \quad & x_{31} = 0, \\
+  &&& x_{32} = 0, \\
+  &&& x_{22} = 2 - x_{11}, \\
+  &&& x_{33} = x_{11}+x_{21}-1, \\
+   &&  &\Xb\succeq 0.
+\end{alignat*}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Formulación dual}
+
+Utilizando desigualdades matriciales lineales tenemos otra forma de plantear problemas SDP. Llamamos formulación dual a un problema planteado en la forma:
+\begin{alignat*}{2}
+  & \text{maximizar: } & & \inner{\bb}{\yb}  \\
+  & \text{sujeto a: } & & \Ab_0 + y_1 \Ab_1 + \dots + y_m \Ab_1 \succeq 0. \\
+\end{alignat*}
+
+Veremos en la próxima clase que cada problema primal tiene asociado un problema dual tal que las soluciones de uno de los problemas pueden usarse para obtener cotas sobre las soluciones del otro.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo de formulación dual}
+
+Resolver el siguiente problema:
+\begin{alignat*}{2}
+  & \text{maximizar: } & \quad & y  \\
+  & \text{sujeto a: } & & \begin{pmatrix} 2-y &  1 \\ 1 & -y \end{pmatrix} \succeq 0\\
+\end{alignat*}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Introducción a Mosek}
+
+Como vemos en la página 
+{\small 
+\url{https://docs.mosek.com/latest/pythonapi/tutorial-sdo-shared.html}, }
+
+Mosek puede resolver problemas de optimización semidefinida de la forma:
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \sum_{j=0}^{n-1} c_j x_j + \sum_{j=0}^{p-1} \innerTrace{\bar \Cb_j}{\bar \Xb_j} \\
+  & \text{sujeto a: }  \quad & & l_i^c \le \sum_{j=0}^{n-1} a_{ij} x_j + \sum_{j=0}^{p-1} \innerTrace{\bar \Ab_{ij}}{\bar \Xb_j} \le u_i^c, \quad i = 0, \dots, m-1, \\
+  &  \quad & & l_i^x \le x_j \le u_i^x, \quad j = 0, \dots, n-1, \\
+  & & & \xb \in \R^n, \bar \Xb_j \succeq 0, j = 0, \dots, p-1
+\end{alignat*}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Problema primal en Mosek}
+
+Para llevar a esa forma un problema primal de la forma
+\begin{alignat*}{2}
+  & \text{minimizar: } & \innerTrace{\Cb}{\Xb} & \\
+  & \text{sujeto a: }  \quad & \innerTrace{\Ab_i}{\Xb} &= b_i, \quad i = 0, \dots, m-1, \\
+   && \Xb &\succeq 0,
+\end{alignat*}
+observamos:
+\begin{itemize}
+\item $p$ es la cantidad de matrices semidefinidas positivas $\Xb$. Por lo tanto, tenemos $p = 1$ y una única matrix $\bar \Xb_0$.
+\item El vector $\xb$ es un vector de variables auxiliares que no aparecen en el problema primal, por lo tanto $n = 0$.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Problema primal en Mosek}
+
+Por lo tanto, el problema primal planteado en el formato de Mosek es 
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \innerTrace{\bar \Cb_0}{\bar \Xb_0} \\
+  & \text{sujeto a: }  \quad & & l_i^c \le \innerTrace{\bar \Ab_{i0}}{\bar \Xb_0} \le u_i^c, \quad i = 0, \dots, m-1, \\
+  & & & \bar \Xb_0 \succeq 0
+\end{alignat*}
+donde $l_i^c = u_i^c = b_i$ para todo $i = 0, \dots, m-1$.
+
+Debemos ingresar en Mosek la matrix $\bar \Cb_0$, las matrices $\bar \Ab_{i0}, i = 0, \dots, m-1$ y las cotas $l_i^c = u_i^c = b_i$, $i = 0, \dots, m-1$.
+\end{frame}
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Mínimo autovalor en Mosek}
+
+Para calcular el mínimo autovalor de una matriz $\Ab \in \Sym^n$, planteamos el problema
+\begin{alignat*}{2}
+  & \text{maximizar: } & & \alpha \\
+  & \text{sujeto a: } & & \Ab - \alpha \Ib  \succeq 0.
+\end{alignat*}
+
+Para llevarlo a la forma de Mosek, definimos $\Xb = \Ab - \alpha \Ib$. Por lo tanto $\Xb + \alpha \Ib = \Ab$ y planteamos el problema equivalente:
+\begin{alignat*}{2}
+  & \text{maximizar: } & & \alpha \\
+  & \text{sujeto a: } & & \Xb + \alpha \Ib = \Ab   \\
+  &&& \Xb \succeq 0.
+\end{alignat*}
+
+Observamos que las restricciones son restricciones lineales en las coordenadas de $\Xb$ y una variable adicional $\alpha$ y la función a maximizar depende de esta variable $\alpha$. 
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejemplo: mínimo autovalor en Mosek}
+
+Veamos como plantear en Mosel el problema de calcular el menor autovalor de 
+$$
+\Ab = \begin{pmatrix}
+3 & 2 \\
+2 & 1 
+\end{pmatrix}.
+$$
+
+La ecuación $\Xb + \alpha \Ib = \Ab$ es 
+$$
+\begin{pmatrix} x_{11} & x_{12} \\ x_{12} & x_{22} \end{pmatrix} + \alpha \begin{pmatrix}
+1 & 0 \\
+0 & 1
+\end{pmatrix} = \begin{pmatrix}
+3 & 2 \\
+2 & 1
+\end{pmatrix}
+$$
+y nos da las ecuaciones:
+\begin{align*}
+x_{11} + \alpha &= 3 \\
+x_{12} &= 2 \\
+x_{22} + \alpha &= 1
+\end{align*}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: mínimo autovalor en Mosek}
+
+Observamos
+\begin{itemize}
+\item Tenemos $p = 0$ y una única matrix $\Xb_0 = \begin{pmatrix} x_{11} & x_{12} \\ x_{12} & x_{22} \end{pmatrix}$.
+\item Tenemos una variable extra $\alpha$, por lo tanto $n = 1$ y $x_0$ representa a $\alpha$.
+\item Tenemos tres restricciones, $m = 3$.
+\item Las restricciones dependen linealmente de la variable $x_0$ y de las coordenadas de la matrix $\Xb_0$, por lo tanto podemos plantearlas en la forma
+$$
+l \le a_{i0} x_0 + \innerTrace{\Ab_{i0}}{\Xb_0} \le u.
+$$
+
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: mínimo autovalor en Mosek}
+
+Obtenemos el problema
+{\small
+\begin{alignat*}{2}
+  & \text{maximizar: } & & x_0 \\
+  & \text{sujeto a: }  \quad & &  3 \le x_0 + \innerTrace{\begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}}{\Xb_0} \le 3 \\
+  &&& 2 \le \innerTrace{\begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}}{\Xb_0} \le 2 \\
+  &&& 1 \le x_0 + \innerTrace{\begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix}}{\Xb_0} \le 1 \\
+  &&& \Xb_0 \succeq 0.  
+\end{alignat*}
+}
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Referencias}
+
+\bibliographystyle{apalike}
+\bibliography{../../latex/optimizacion}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\end{document}
+
+\begin{frame}
+\frametitle{Conos}
+
+Decimos que un cono es \emph{puntiagudo} si
+$$
+\xb  \in \CC \text{ y } -\xb \in \CC \Rightarrow \xb = 0.
+$$
+
+El \emph{cono dual} de un cono $\CC$ es
+$$
+\CC^* = \{\yb \in \R^n \mid \xb^T \yb \ge 0 \enspace \forall \xb \in \CC\}.
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Orden parcial}
+
+Dado un cono puntiagudo $\CC$ en $\R^n$, podemos definir un orden parcial en $\R^n$ por
+$$
+\xb \succeq \yb \iff \xb - \yb \in \CC
+$$
+para $\xb, \yb \in \R^n$. Este orden satisface las siguientes propiedades:
+\begin{itemize}
+\item \textbf{reflexividad:} $\forall \xb \in \R^n: \xb \succeq \xb$
+\item \textbf{antisimetría:} $\forall \xb, \yb \in \R^n: \xb \succeq \yb, \yb \succeq \xb \Rightarrow \xb = \yb$
+\item \textbf{transitividad:} $\forall \xb, \yb, \zb \in \R^n: \xb \succeq \yb, \yb \succeq \zb \Rightarrow \xb \succeq \zb$
+\item \textbf{homogeneidad:} $\forall \xb, \yb \in \R^n, \forall \alpha \in \R_{\ge 0}: \xb \succeq \yb \Rightarrow \alpha \xb \succeq \alpha \yb$
+\item \textbf{aditividad:} $\forall \xb, \yb, \xb', \yb' \in \R^n: \xb \succeq \yb, \xb' \succeq \yb' \Rightarrow \xb + \xb' \succeq \yb + \yb'$
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Desigualdad estricta}
+
+En general, nos van a interesar conos convexos de dimensión completa, es decir conos con interior no vacío. En ese caso, podemos definir la desigualdad estricta
+$$
+\xb \succ \yb \iff \xb - \yb \in \interior \CC.
+$$
+
+\end{frame}
+
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Separación}
+
+Tenemos el siguiente resultado de separación.
+
+\begin{lemma} Sean $\CC \subset \R^n$ un cono convexo cerrado y $\xb \in \R^n \smallsetminus \CC$ un punto fuera de $\CC$. Existe un hiperplano que separa a $\{\xb\}$ de $\CC$. Más aún, existe un vector no nulo $\cb \in \R^n$ tal que
+$$
+\forall \yb \in \R^n : \inner{\cb}{\yb} \ge 0 > \inner{\cb}{\xb}.
+$$
+\end{lemma}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplos}
+
+\noindent\textbf{Cono generado por un conjunto de puntos.}
+El cono generado por un conjunto de puntos $A = \{x_1, \dots, x_N\} \subset \R^n$ es el menor cono que contiene a $A$. Es el cono
+$$
+\cone A = \left\{ \sum_{i=1}^N \alpha_i x_i \mid \alpha_1, \dots, \alpha_N \in \R_{\ge 0}\right\}.
+$$
+
+\noindent\textbf{El ortante no-negativo.}
+El ortante no-negativo que utilizamos en programación lineal, definido por
+$$
+\R^n_{\ge 0} = \{(x_1, \dots, x_n) \in \R^n \mid x_1, \dots, x_n \ge 0\}
+$$
+es un cono puntiagudo convexo cerrado de dimensión completa.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: el cono de matrices semidefinidas positivas}
+
+\begin{proposition}
+El conjunto $\Splusn$ de matrices semidefinidas positivas es un cono convexo.
+\end{proposition}
+
+\textbf{Demostración.}
+Podemos escribir a $\Splusn$ como intersección de infinitos semiespacios:
+$$
+\Splusn = \{\Ab \in \Symn \mid \xb^T \Ab \xb \ge 0 \enspace \forall \xb \in \R^n\} = \bigcap_{\xb\in\R^n} \{\Ab \in \Symn \mid \xb^T \Ab \xb \ge 0\},
+$$
+y por lo tanto es un conjunto convexo cerrado.
+Para ver que forman un cono, si $\Ab, \Bb \succeq 0$ y $a \ge 0$, es claro que $a \Ab \succeq 0$ y también que
+$$\xb^T (\Ab + \Bb) \xb = \xb^T \Ab \xb + \xb^T \Bb \xb \ge 0$$
+ para todo $\xb \in \R^n$.
+
+\end{frame}
+

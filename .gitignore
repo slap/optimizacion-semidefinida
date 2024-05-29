@@ -6,3 +6,6 @@
 *.out
 *.synctex
 *.toc
+clases/01-programacionLineal/bibliografia.tex
+*.nav
+*.snm

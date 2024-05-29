@@ -1,0 +1,812 @@
+\documentclass[aspectratio=169,12pt,spanish]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+\usepackage{wrapfig}
+
+%\usepackage{multicol}
+%\usepackage{mathtools}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{pgf,tikz}
+\usetikzlibrary{matrix}
+\usetikzlibrary{arrows}
+
+%\usepackage{wrapfig}
+\mode<presentation>
+\usefonttheme{professionalfonts}
+\usetheme{Darmstadt}
+\usecolortheme{orchid}
+\useoutertheme{default}
+\setbeamertemplate{headline}{}
+
+\newcounter{savedenum}
+\newcommand*{\saveenum}{\setcounter{savedenum}{\theenumi}}
+\newcommand*{\resume}{\setcounter{enumi}{\thesavedenum}}
+
+\renewcommand{\baselinestretch}{1.1}
+
+%gets rid of bottom navigation bars
+\setbeamertemplate{footline}[page number]
+
+%gets rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+%\frameframe{none} % No default frame
+
+%\setlength{\framewidth}{8.7in} \setlength{\frameheight}{7.2in}
+
+\parindent 0pt
+\setlength{\parskip} {1ex plus 0.5ex minus 0.2ex}
+
+
+\usepackage[bbgreekl]{mathbbol}
+\usepackage{amssymb, amsthm, amsmath}
+\usepackage{bm}
+
+\newtheorem{ejercicio}{Ejercicio}
+\newtheorem{proposition}[theorem]{Proposición}
+
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+\DeclareSymbolFontAlphabet{\mathbbl}{bbold}
+
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{lmodern}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{stmaryrd}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\graphicspath{ {../../images} }
+\input{../../latex/preamble}
+
+\pagestyle{empty}
+
+\begin{document}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+ \begin{center}
+
+\Large\textbf{Optimización Semidefinida} \\
+\large\textbf{Clase 04 - Matrices definidas positivas}
+%\vspace{0.5cm}
+
+% \textit{Santiago Laplagne} \\
+%slaplagn@dm.uba.ar \\
+
+
+%\vspace{0.5cm}
+%{\small Trabajo en progreso en conjunto con \emph{Jose Capco} (Universit\"at Innsbruck) y \emph{Claus Scheiderer} %(Universit\"at Konstanz).} \\
+
+\vspace{1cm}
+ Segundo Cuatrimestre 2021
+ \\
+ {\small Facultad de Ciencias Exactas y Naturales, UBA}
+ \end{center}
+
+\end{frame}
+
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivación}
+
+Consideremos una sucesión de vectores definida recursivamente por
+$$
+\xb[k + 1] = \Ab \xb[k], \quad \xb[0] = \xb_0
+$$
+
+El sistema tiende a 0 para todo vector inicial si y solo todos los autovalores de $\Ab$ tienen módulo menor que 1.
+
+Dada una matriz $\Ab$ con autovalores $\lambda_1, \dots, \lambda_n$, los autovalores de $\Ab - \alpha I$ son $\lambda_1 - \alpha, \dots, \lambda_n - \alpha$.
+
+Si $\Ab$ es simétrica, todos sus autovalores son reales, y podemos calcular su radio espectral calculando el mayor y menor autovalor.
+
+En este caso, podemos plantear el problema de hallar el menor autovalor como un problema de optimización:
+$$
+\min \{\lambda : \lambda \text{ autovalor de $\Ab$}\} = \sup_{\alpha \in \R} \{\alpha : \Ab - \alpha I \succeq 0\}.
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Matrices simétricas}
+
+Notamos $\Sym^n$ al espacio de matrices simétricas
+$$
+\Sym^n = \{A \in \R^{n \times n} | a_{ij} = a_{ji}, \forall 1 \le i, j \le n\}.
+$$
+Es un subespacio vectorial de $\R^{n \times n}$ de dimensión $\frac{n(n+1)}{2}$.
+
+\begin{proposition}
+Si $\Ab$ es simétrica, entonces
+\begin{enumerate}
+\item $\xb^* \Ab \xb \in \R$ para todo $\xb \in \C^n$,
+\item \label{item:realav} todos los autovalores de $\Ab$ son reales,
+\item autovectores correspondientes a autovalores distintos son perpendiculares,
+\item $\Sb^T \Ab \Sb$ es simétrica para toda $\Sb \in \Rnn$.
+\end{enumerate}
+\end{proposition}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Teorema espectral para matrices simétricas}
+
+\begin{theorem}
+Cualquier matriz simétrica $\Ab \in \Symn$ admite una descomposición
+$$
+\Ab = \Ub \Db \Ub^T,
+$$
+con $\Ub \in \Rnn$ matriz ortogonal y $\Db \in \Rnn$ matriz diagonal, con los autovalores $\{\lambda_1, \dots, \lambda_n\} \subset \R$ de $\Ab$ en la diagonal. 
+%Equivalentemente,
+%$$
+%\Ab = \sum_{i=1}^n \lambda_i u_i u_i^T,
+%$$
+%con $u_i \in \R_n$, $1 \le i \le n$, los autovectores de $\Ab$, que se corresponden con las columnas de $\Pb$.
+\end{theorem}
+
+\textbf{Idea de la demostración.} Para cualquier matriz $\Xb \in \Rnn$ podemos calcular la descomposición de Schur
+$$
+\Xb = \Ub \Tb \Ub^T,
+$$
+con $\Ub$ matriz ortogonal y $\Tb$ triangular superior. Si $\Xb$ es simétrica, $\Tb$ resulta diagonal.
+Ver \cite[Teorema 4.1.5]{Horn1985}.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Congruencia de matrices}
+
+En el caso de matrices simétricas existe una diagonalización más simple que la diagonalización por matrices semejantes, que es especialmente útil en problemas de programación semidefinida.
+
+\begin{definition}
+Dos matrices $\Ab, \Bb \in \Rnn$ son \emph{congruentes} si existe una matrix $\Sb \in \Rnn$ inversible tal que
+$$
+\Ab = \Sb \Bb \Sb^T.
+$$
+\end{definition}
+
+La relación de congruencia es una relación de equivalencia.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Signatura de una matriz}
+
+Dada una matriz simétrica $\Ab \in \Symn$ definimos la \emph{signatura} de $\Ab$ como la terna 
+$$(n_+, n_-, n_0),$$
+donde 
+\begin{itemize}
+\item $n_+$ la cantidad de autovalores positivos de $\Ab$, 
+\item $n_-$ la cantidad de autovalores negativos, 
+\item $n_0$ es la cantidad de autovalores nulos.
+\end{itemize}
+
+Si $\Ab \in \Symn$, podemos escribir $\Ab = \Ub \Lambdab \Ub^T$ con $\Lambdab =  \diag(\lambda_1, \dots, \lambda_n)$, la matriz con los autovalores de $\Ab$ en la diagonal, y $\Ub$ unitaria. Suponemos que los autovalores positivos son los primeros, luego los autovalores negativos y finalmente los autovalores cero.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ley de inercia}
+
+Definiendo la matriz diagonal no-singular real
+$$\Db = \diag(\sqrt{\lambda_1}, \dots, \sqrt{\lambda_{n_+}}, \sqrt{-\lambda_{n_{+}+1}}, \dots, \sqrt{-\lambda_{n_{+}+n_{-}}}, 1, \dots, 1),$$
+obtenemos
+$$
+\Lambdab = \Db \begin{pmatrix}
+1 &        &   &    &        &    &   &        &   \\
+  & \ddots &   &    &        &    &   &        &   \\
+  &        & 1 &    &        &    &   &        &   \\
+  &        &   & -1 &        &    &   &        &   \\
+  &        &   &    & \ddots &    &   &        &   \\
+  &        &   &    &        & -1 &   &        &   \\
+  &        &   &    &        &    & 0 &        &   \\
+  &        &   &    &        &    &   & \ddots &   \\
+  &        &   &    &        &    &   &        & 0 \\
+\end{pmatrix}
+\Db.$$
+  
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ley de inercia}
+
+Podemos escribir a la matriz $\Ab$ como
+$$
+\Ab = \Ub \Lambdab \Ub^T = \Sb
+\begin{pmatrix}
+1 &        &   &    &        &    &   &        &   \\
+  & \ddots &   &    &        &    &   &        &   \\
+  &        & 1 &    &        &    &   &        &   \\
+  &        &   & -1 &        &    &   &        &   \\
+  &        &   &    & \ddots &    &   &        &   \\
+  &        &   &    &        & -1 &   &        &   \\
+  &        &   &    &        &    & 0 &        &   \\
+  &        &   &    &        &    &   & \ddots &   \\
+  &        &   &    &        &    &   &        & 0 \\
+\end{pmatrix}
+\Sb^T = \Sb \Ib(\Ab) \Sb^T,$$
+donde $\Sb = \Ub \Db$ es una matriz no-singular e $\Ib(\Ab)$ es la matriz de inercia de $\Ab$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ley de inercia}
+
+Utilizando esta escritura, la ley de inercia nos permite determinar fácilmente si dos matrices simétricas son congruentes.
+
+\begin{theorem}
+Dos matrices simétricas $\Ab, \Bb \in \Symn$ son congruentes si y solo si tienen la misma signatura.
+\end{theorem}
+
+\textbf{Demostración.}
+Si dos matrices $\Ab, \Bb$ tienen la misma signatura, utilizando la construcción anterior, obtenemos que $\Ab$ y $\Bb$ son congruentes a la misma matriz de inercia. Como la relación de congruencia es una relación de equivalencia, las matrices $\Ab$ y $\Bb$ son congruentes.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ley de inercia (continacuón de la demostración)}
+
+Para la otra implicación, suponemos $\Ab$ y $\Bb$ congruentes, con $\Ab = \Sb \Bb \Sb^T$, para alguna matriz no-singular $\Sb \in \Rnn$. Como las matrices congruentes tienen el mismo rango, $n_0(\Ab) = n_0(\Bb)$ y alcanza ver que $n_+(\Ab) = n_+(\Bb)$. Notamos $k = n_+(\Ab)$.
+
+Sean $\vb_1, \dots, \vb_k$ autovectores ortonormales de $\Ab$ correspondientes a los autovalores positivos $\lambda_1(\Ab), \dots, \lambda_{k}$ y sea $S_+(\Ab) = \langle \vb_1, \dots, \vb_{k} \rangle$.
+
+La dimensión de $S_+(\Ab)$ es $k$, y si
+$$\xb = \alpha_1 \vb_1 + \dots + \alpha_k \vb_{k} \neq 0,$$
+entonces
+$$\xb^T \Ab \xb = \lambda_1(\Ab) |\alpha_1|^2 + \dots + \lambda_{k}(\Ab) |\alpha_k|^2 > 0.$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ley de inercia (continación de la demostración)}
+
+Por lo tanto,
+$$
+\xb^T (\Sb \Bb \Sb^T) \xb = (\Sb^T\xb)^T \Bb (\Sb^T \xb) > 0,
+$$
+luego $\yb^T \Bb \yb > 0$ para todo vector no nulo $\yb \in \langle \Sb^T \vb_1, \dots, \Sb^T \vb_k \rangle$, que es un espacio de dimensión $k$. Por lo tanto, $n_+(\Bb) \ge k = n_+(\Ab)$ y realizando el mismo razonamiento intercambiando $\Ab$ por $\Bb$, obtenemos $n_+(\Ab) = n_+(\Bb)$.
+
+\vspace{1cm}
+
+En particular, cualquier matriz simétrica es congruente a una matriz diagonal con valores $0$, $+1$ o $-1$ en la diagonal, y la cantidad de cada uno de estos valores en la diagonal es invariante, no depende de la matriz $\Sb$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Diagonalización por congruencia}
+
+Dada una matriz simétrica $\Ab \in \Symn$ podemos obtener una matriz diagonal $\Db$ congruente a $\Ab$ por eliminación gaussiana (realizando simultáneamente eliminación en filas y columnas). 
+
+Por lo tanto, podemos calcular eficientemente tanto la diagonalización por congruencia como la signatura de la matriz.
+
+\begin{example}
+Calcular una matriz $\Db$ diagonal que sea congruente a 
+$$
+\Ab = 
+\begin{pmatrix}
+3 & 0 & 6 \\
+0 & 0 & 1 \\
+6 & 1 & 1 
+\end{pmatrix}.
+$$
+Calcular los autovalores de $\Ab$ y verificar la ley de inercia.
+\end{example}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Matrices definidas positivas}
+
+Una matriz $\Ab \in \R^{n \times n}$ se llama \emph{semidefinida positiva} si es simétrica y
+$$
+\xb^T \Ab \xb  \ge 0
+$$
+para todo $\xb \in \R^n$. Si además $\xb^T \Ab \xb = 0$ solo para $\xb = 0$, decimos que la matriz es \emph{definida positiva}.
+
+Notamos $\Ab \succ 0$ a las matrices definidas positivas y $\Ab \succeq 0$ a las matrices semidefinidas positivas.
+
+Si $\Ab = \Mb^T \Mb$ para $\Mb \in \R^{m \times n}$ cualquiera, entonces
+$$
+\xb^T \Ab \xb = \xb^T \Mb^T \Mb \xb = \| \Mb \xb \|^2 \ge 0,
+$$
+lo que nos da un amplio stock de matrices positivas semidefinidas.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Caracterización de matrices semidefinidas positivas}
+
+Dado un conjunto $S \subset \{1, \dots, n\}$, definimos el menores principales asociado a $S$ como el determinante de la submatriz cuadrada  $A_{S,S}$ formada por las filas y columnas de $A$ con índices en $S$.
+
+\begin{theorem}
+  Si $A \in \Rnn$ es un matriz simétrica, las siguientes propiedades son equivalentes:
+  \begin{enumerate}
+  \item $\Ab$ es semidefinida positiva ($\xb^T \Ab \xb \ge 0$ para todo $\xb \in \R^n$),
+  \item todos los autovalores de $\Ab$ son no-negativos,
+  \item $\Ab = \Mb^T \Mb$ para alguna matriz $\Mb \in \R^{n \times n}$,
+  \item \emph{todos} los menores principales de $\Ab$ son no-negativos.
+  \end{enumerate}
+\end{theorem}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Caracterización de matrices definidas positivas}
+
+Para matrices definidas positivas, obtenemos equivalencias similares.
+
+\begin{theorem}
+  Si $\Ab \in \Rnn$ es un matriz simétrica, las siguientes propiedades son equivalentes.
+  \begin{enumerate}
+  \item $\Ab$ es definida positiva ($\xb^T \Ab \xb > 0$ para todo $\xb \in \R^n$),
+  \item todos los autovalores de $\Ab$ son positivos,
+  \item \label{MTM} $\Ab = \Mb^T \Mb$ para alguna matriz $\Mb \in \R^{n \times n}$ no singular,
+  \item \label{menoresprincipales} todos los menores principales de $\Ab$ son positivos,
+  \item el polinomio característico de $\Ab$ tiene signos alternados: si $\chi_{\Ab}(t) = t^n + a_{n-1} t^{n-1} + a_1 t + a_0$, entonces $a_i a_{i+1} < 0$ para todo $0 \le i \le {n-1}$ (definiendo $a_n = 1$).
+  \end{enumerate}
+\end{theorem}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Menores principales de cabeza}
+
+Si $S = \{1, 2, \dots, k\}$, decimos que el menor asociado es un \emph{menor principal de cabeza}.
+
+En el caso de matrices definidas positivas, podemos restringir la condición (\ref{menoresprincipales}) a considerar solo los menores principales de cabeza.
+
+\textbf{Idea de la demostración.} Usamos que para una matriz simétrica $\Ab$, los autovalores de 
+$$
+\hat \Ab = \begin{pmatrix} 
+\Ab & \yb \\
+\yb^T & a 
+\end{pmatrix},$$
+con $\yb \in \R^n$ y $a \in \R$ están entrecruzados con los autovalores de $\Ab$ (ver \cite[Teorema 4.3.8]{Horn1985}).
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Factorización de Cholesky}
+
+En ambos casos, la condición (\ref{MTM}) podemos restringirla a matrices triangulares inferiores. Recordemos que cualquier matriz $\Cb \in \Rnn$ admite una descomposición $\Qb\Rb$ y puede escribirse como $\Cb = \Qb \Rb$ con $\Qb$ unitaria y $\Rb$ triangular superior del mismo rango que $\Cb$. Luego
+$$
+\Ab = \Cb^T \Cb = (\Qb \Rb)^T \Qb \Rb = \Rb^T \Qb^T \Qb \Rb = \Rb^T \Rb
+$$
+y tomando $\Lb = \Rb^T$, obtenemos $\Ab = \Lb \Lb^T$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Factorización de Cholesky}
+
+
+Si $\Cb$ es no singular, podemos elegir $\Rb$ con todos los valores en la diagonal positivos (y la descomposición de esta forma es única).
+Esto prueba el siguiente corolario, que nos da la \emph{descomposición de Cholesky} de una matriz definida positiva.
+
+\begin{corollary}
+Una matriz $\Ab$ es definida positiva si y solo si existe una matriz trinagular inferior $\Lb \in \Rnn$ con valores positivos en la diagonal tal que $\Ab = \Lb \Lb^T$.
+\end{corollary}
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conos}
+
+
+Un subconjunto $\CC$ de un espacio vectorial real $V$ es un \emph{cono convexo} si es cerrado por combinaciones lineales positivas. Es decir,
+\begin{enumerate}
+\item Si $\xb \in \CC$ y $a \ge 0$, entonces $a\xb \in \CC$.
+\item Si $\xb, \yb \in \CC$, entonces $\xb + \yb \in \CC$.
+\end{enumerate}
+
+En este apunte siempre que hablemos de \emph{conos} vamos a referirnos a conos convexos.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Conos}
+
+Decimos que un cono es \emph{puntiagudo} si
+$$
+\xb  \in \CC \text{ y } -\xb \in \CC \Rightarrow \xb = 0.
+$$
+
+El \emph{cono dual} de un cono $\CC$ es
+$$
+\CC^* = \{\yb \in \R^n \mid \xb^T \yb \ge 0 \enspace \forall \xb \in \CC\}.
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Orden parcial}
+
+Dado un cono puntiagudo $\CC$ en $\R^n$, podemos definir un orden parcial en $\R^n$ por
+$$
+\xb \succeq \yb \iff \xb - \yb \in \CC
+$$
+para $\xb, \yb \in \R^n$. Este orden satisface las siguientes propiedades:
+\begin{itemize}
+\item \textbf{reflexividad:} $\forall \xb \in \R^n: \xb \succeq \xb$
+\item \textbf{antisimetría:} $\forall \xb, \yb \in \R^n: \xb \succeq \yb, \yb \succeq \xb \Rightarrow \xb = \yb$
+\item \textbf{transitividad:} $\forall \xb, \yb, \zb \in \R^n: \xb \succeq \yb, \yb \succeq \zb \Rightarrow \xb \succeq \zb$
+\item \textbf{homogeneidad:} $\forall \xb, \yb \in \R^n, \forall \alpha \in \R_{\ge 0}: \xb \succeq \yb \Rightarrow \alpha \xb \succeq \alpha \yb$
+\item \textbf{aditividad:} $\forall \xb, \yb, \xb', \yb' \in \R^n: \xb \succeq \yb, \xb' \succeq \yb' \Rightarrow \xb + \xb' \succeq \yb + \yb'$
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Desigualdad estricta}
+
+En general, nos van a interesar conos convexos de dimensión completa, es decir conos con interior no vacío. En ese caso, podemos definir la desigualdad estricta
+$$
+\xb \succ \yb \iff \xb - \yb \in \interior \CC.
+$$
+
+\end{frame}
+
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Separación}
+
+Tenemos el siguiente resultado de separación.
+
+\begin{lemma} Sean $\CC \subset \R^n$ un cono convexo cerrado y $\xb \in \R^n \smallsetminus \CC$ un punto fuera de $\CC$. Existe un hiperplano que separa a $\{\xb\}$ de $\CC$. Más aún, existe un vector no nulo $\cb \in \R^n$ tal que
+$$
+\forall \yb \in \R^n : \inner{\cb}{\yb} \ge 0 > \inner{\cb}{\xb}.
+$$
+\end{lemma}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplos}
+
+\noindent\textbf{Cono generado por un conjunto de puntos.}
+El cono generado por un conjunto de puntos $A = \{x_1, \dots, x_N\} \subset \R^n$ es el menor cono que contiene a $A$. Es el cono
+$$
+\cone A = \left\{ \sum_{i=1}^N \alpha_i x_i \mid \alpha_1, \dots, \alpha_N \in \R_{\ge 0}\right\}.
+$$
+
+\noindent\textbf{El ortante no-negativo.}
+El ortante no-negativo que utilizamos en programación lineal, definido por
+$$
+\R^n_{\ge 0} = \{(x_1, \dots, x_n) \in \R^n \mid x_1, \dots, x_n \ge 0\}
+$$
+es un cono puntiagudo convexo cerrado de dimensión completa.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo: el cono de matrices semidefinidas positivas}
+
+\begin{proposition}
+El conjunto $\Splusn$ de matrices semidefinidas positivas es un cono convexo.
+\end{proposition}
+
+\textbf{Demostración.}
+Podemos escribir a $\Splusn$ como intersección de infinitos semiespacios:
+$$
+\Splusn = \{\Ab \in \Symn \mid \xb^T \Ab \xb \ge 0 \enspace \forall \xb \in \R^n\} = \bigcap_{\xb\in\R^n} \{\Ab \in \Symn \mid \xb^T \Ab \xb \ge 0\},
+$$
+y por lo tanto es un conjunto convexo cerrado.
+Para ver que forman un cono, si $\Ab, \Bb \succeq 0$ y $a \ge 0$, es claro que $a \Ab \succeq 0$ y también que
+$$\xb^T (\Ab + \Bb) \xb = \xb^T \Ab \xb + \xb^T \Bb \xb \ge 0$$
+ para todo $\xb \in \R^n$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Desplazamiento máximo}
+
+
+Recordemos que para las variables $x_i$ no-básicas,
+\begin{itemize}
+\item o bien $d_i = 1$ si es la variable que pasa a ser variable básica,
+\item o bien $d_i = 0$.
+\end{itemize}
+
+En ambos casos $d_i \ge 0$, por lo tanto podemos restringirnos a mirar las variables básicas en la fórmula anterior. Obtenemos
+\begin{equation}
+\label{eq:thetastar}
+\theta^\star = \min_{\{i = 1, \dots, m \mid d_{B(i)} < 0 \}}\left(-\frac{x_{B(i)}}{d_{B(i)}}\right).
+\end{equation}
+
+Más aún, como supusimos que todas las soluciones son no-degeneradas, $x_i > 0$ para todas las variables básicas, y por lo tanto obtenemos siempre $\theta^\star > 0$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo (cont.)}
+
+Continuamos el ejemplo. Obtuvimos
+$$\xb = (1, 1, 0, 0), \quad \db = (-3/2, 1/2, 1, 0)\quad \text{ y } \quad \bar c_3 = -3.$$
+Como $\bar c_3$ es negativo, podemos disminuir el costo de la función objetivo desplazándonos en esta dirección. Es decir, consideramos los vectores
+$$
+\xb + \theta \db,
+$$
+con $\theta > 0$.
+
+La única coordenada que decrece al desplazarnos es $x_1$, por lo que si tomamos cualquier valor de $\theta > 0$ tal que la primera coordenada se mantenga no-negativa, estaremos dentro del poliedro.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo (cont.)}
+
+El máximo valor de $\theta$ que podemos tomar es
+$$
+\theta^\star = -\frac{x_1}{d_1} = \frac{2}{3},
+$$
+y nos desplazamos a
+$$
+\yb = \xb + \frac{2}{3} \db = \left(0, \frac{4}{3}, \frac{2}{3}, 0\right).
+$$
+
+Las columnas correspondientes a las coordenadas no-nulas son $\Ab_2 = (1, 0)$ y $\Ab_3 = (1,3)$, y son linealmente independientes. Por lo tanto $\yb$ es una nueva solución básica factible. Como queríamos minimizar el valor de $x_1$, y tenemos la restricción $x_1 \ge 0$, hemos encontrado el costo óptimo.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Ejemplo (cont.)}
+
+Para verificación, calculamos el costo reducido $\bar c_4$ por la fórmula
+$$
+\bar c_4 = c_4 - \inner{\cb_B}{(\Bb^{-1} \Ab_4)} = 1 - \begin{pmatrix} 1 & 0 \end{pmatrix} \begin{pmatrix} 1 & 1 \\ 0 & 3 \end{pmatrix}^{-1}
+\begin{pmatrix} 1 \\ 4 \end{pmatrix} = \frac{4}{3}.
+$$
+
+Vemos que movernos en la dirección básica correspondiente va a incrementar el valor de la función objetivo y por lo tanto no debemos desplazarnos en esa dirección.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Nueva solución básica factible}
+
+Una vez que determinamos $\theta^\star$, suponiendo que es finito, nos movemos a una nueva solución factible
+$$
+\yb = \xb + \theta^\star \db.
+$$
+
+Por la construcción que hicimos de $\db$ y $\theta^\star$, si $\ell$ es el índice que minimiza la fórmula (\ref{eq:thetastar}) de $\theta^\star$ (es decir, $\theta^\star = -x_{B(\ell)} / d_{B(\ell)}$), se cumple
+$$
+x_{B(\ell)} = 0 \quad \text{ y } \quad x_j = \theta^\star.
+$$
+
+Obtenemos que $x_j$ reemplaza a $x_{B(\ell)}$ en el conjunto de variables básicas. El nuevo conjunto de índices de las variables básicas es $\bar B = \{\bar B(1), \dots, \bar B(m)\}$, con
+$$
+\bar B(i) = \begin{cases}
+B(i), & i \neq \ell,\\
+j, &i = \ell.
+\end{cases}
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Nueva solución básica factible}
+
+Llamamos $\bar \Bb$ a la nueva matriz base, formada por las columnas de $\Ab$ correspondientes a las nuevas variables básicas.
+
+\begin{theorem}
+\begin{enumerate}
+\item Las columnas $\Ab_{B(i)}$, $i \neq \ell$, y $\Ab_j$ son linealmente independientes y, por lo tanto, $\bar \Bb$ es una matriz base.
+\item El vector $\yb = \xb + \theta^\star \db$ es una solución básica factible con matriz base asociada $\bar \Bb$.
+\end{enumerate}
+\end{theorem}
+
+\textbf{Demostración.} Ver \cite[Teorema 3.2]{Bertsimas1997}.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Algortimo del método simplex}
+
+Mediante el procedimiento descripto, pasamos de una solución básica factible a otra solución básica factible con menor costo.
+Obtenemos la siguiente iteración del método simplex.
+
+\begin{enumerate}
+\item Comenzamos con una solución básica factible $\xb$, correspondiente a variables básicas con índices $I = \{B(1), \dots, B(m)\}$.
+\item Tomamos la submatriz $\Bb$ de $\Ab$ formada por las columnas correspondientes a las variables básicas, y calculamos los costos reducidos
+    $$\bar c_j = c_j - \inner{\cb_B}{(\Bb^{-1} \Ab_j)}, \quad j \not\in I.$$
+Si todos los costos son no-negativos, $\xb$ es una solución óptima y terminamos. Si no, elegimos algún $j$ tal que $\bar c_j < 0$.
+\saveenum
+\end{enumerate}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Algortimo del método simplex}
+
+\begin{enumerate}
+\resume
+\item Calculamos $\ub = -\db_B = \Bb^{-1} \Ab_j$. Si $\ub$ no tiene ninguna componente positiva, tomamos $\theta^\star = \infty$, el costo óptimo es $-\infty$ y el algoritmo termina.
+\item Si alguna componente de $\ub$ es positiva, tomamos
+$$
+\theta^\star = \min_{\{i = 1, \dots, m \mid u_i > 0\}} \frac{x_{B(i)}}{u_i}.
+$$
+\item Sea $\ell$ un índice para el cuál se alcanza el mínimo. Construimos una nueva base reemplazando $B(\ell)$ por $j$. La nueva variable básica $\yb$ queda definida por
+    $$
+    \begin{cases}
+    y_j = \theta^\star, \\
+    y_{B(i)} = x_{B(i)} - \theta^\star u_i, & 1 \le i \le m, i \neq l \\
+    y_i = 0 & \text{ para los índices de variables no-básicas.}
+    \end{cases}
+    $$
+\end{enumerate}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Puntos extremales y soluciones óptimas}
+
+En base a todo lo que vimos es fácil verificar que el método simplex descripto resuelve correctamente el problema de programación lineal.
+
+Completando el método para considerar soluciones degeneradas, podemos demostrar la siguiente propiedad de los problemas de programación lineal.
+
+\vspace{0.5cm}
+
+\begin{theorem}
+Consideremos el problema de programación lineal de minimizar una funcional $\inner{\cb}{\xb}$ sobre un poliedro $P$. Si $P$ tiene al menos un punto extremal entonces o bien el costo óptimo es $-\infty$ o bien existe un punto extremal que es óptimo.
+\end{theorem}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Existencia de puntos extremales}
+
+En general los poliedros pueden no tener puntos extremales. Por ejemplo, un semiplano en $\R^2$ no tiene puntos extremales.
+Una condición muy simple para determinar si un poliedro tiene puntos extremales es la existencia o no de líneas rectas incluidas en el poliedro.
+
+Decimos que un poliedro $P \subset \R^n$ contiene una recta si existe un vector $\xb \in P$ y una dirección $\db \in \R^n$ tales que $\xb + \lambda \db \in P$ para todo $\lambda \in \R$.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Existencia de puntos extremales}
+
+\begin{theorem}
+Dado un poliedro $P = \{\xb \in \R^n \mid \inner{\ab_i}{\xb} \ge b_i, i = 1, \dots, m\}$, las siguientes condiciones son equivalentes.
+
+\begin{enumerate}
+\item El poliedro $P$ contiene al menos un punto extremal.
+\item El poliedro $P$ no contiene ninguna recta.
+\item Existen $n$ vectores linealmente independientes entre los vectores $\ab_1, \ab_2, \dots, \ab_m$.
+\end{enumerate}
+\end{theorem}
+
+\textbf{Demostración.} \cite[Teorema 2.6]{Bertsimas1997}.
+
+En particular, cualquier poliedro acotado tiene puntos extremales y cualquier poliedro en forma estándar tiene puntos extremales, debido a que el ortante positivo $\{x_i \ge 0, 1 \le i \le n\}$ no contiene ninguna recta.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Referencias}
+
+\bibliographystyle{apalike}
+\bibliography{../../latex/optimizacion}
+
+\end{frame}
+
+\end{document}
+
+%------------------------------------------------------------------
+
+%------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Costo reducido}
+
+La siguiente propiedad será clave para estudiar la dualidad en programación semidefinida.
+
+\begin{theorem}
+Una matriz $A$ es semidefinida positiva si y solo si $\innerTrace{A}{X} \ge 0$ para toda matriz $X \in \Splus$.
+\end{theorem}
+
+\begin{proof}
+Si $A \succeq 0$, entonces $A = B^T B$ para alguna matriz $B$ y por lo tanto,
+$$
+\innerTrace{A}{X} = \tr(AX) = \tr(B^T B X) = \tr(B X B^T).
+$$
+
+Como $X \succeq 0$, también $B X B^T \succeq 0$ y por lo tanto $\tr(B X B^T) \ge 0$.
+
+Para la otra dirección, si $x \in \R^n$, entonces $x x^T \in \Rnn$ es una matriz semidefinida positiva. Si $\langle A, X\rangle \ge 0$ para toda $X$, entonces $\innerTrace{A}{x x^T}  \ge 0$ para todo $x \in \Rn$ y
+$$
+\innerTrace{A}{xx^T} = \tr(A x x^T) = \tr(x^T A x) = x^T A x
+$$
+y por lo tanto $x^T A x \ge 0$ para todo $x$.
+\end{proof}
+

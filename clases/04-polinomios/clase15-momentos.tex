@@ -1,0 +1,605 @@
+\documentclass[aspectratio=169,12pt,spanish]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+\usepackage{wrapfig}
+
+%\usepackage{multicol}
+%\usepackage{mathtools}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{pgf,tikz}
+\usetikzlibrary{matrix}
+\usetikzlibrary{arrows}
+
+%\usepackage{wrapfig}
+\mode<presentation>
+\usefonttheme{professionalfonts}
+\usetheme{Darmstadt}
+\usecolortheme{orchid}
+\useoutertheme{default}
+\setbeamertemplate{headline}{}
+
+\newcounter{savedenum}
+\newcommand*{\saveenum}{\setcounter{savedenum}{\theenumi}}
+\newcommand*{\resume}{\setcounter{enumi}{\thesavedenum}}
+
+\renewcommand{\baselinestretch}{1.1}
+
+%gets rid of bottom navigation bars
+\setbeamertemplate{footline}[page number]
+
+%gets rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+%\frameframe{none} % No default frame
+
+%\setlength{\framewidth}{8.7in} \setlength{\frameheight}{7.2in}
+
+\parindent 0pt
+\setlength{\parskip} {1ex plus 0.5ex minus 0.2ex}
+
+
+\usepackage[bbgreekl]{mathbbol}
+\usepackage{amssymb, amsthm, amsmath}
+\usepackage{bm}
+
+\newtheorem{ejercicio}{Ejercicio}
+\newtheorem{proposition}[theorem]{Proposición}
+
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+\DeclareSymbolFontAlphabet{\mathbbl}{bbold}
+
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{lmodern}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{stmaryrd}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\graphicspath{ {../../images} }
+\input{../../latex/preamble}
+
+\pagestyle{empty}
+
+\begin{document}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+ \begin{center}
+
+\Large\textbf{Optimización Semidefinida} \\
+\large\textbf{Clase 15 - El problema de los momentos}
+%\vspace{0.5cm}
+
+% \textit{Santiago Laplagne} \\
+%slaplagn@dm.uba.ar \\
+
+
+%\vspace{0.5cm}
+%{\small Trabajo en progreso en conjunto con \emph{Jose Capco} (Universit\"at Innsbruck) y \emph{Claus Scheiderer} %(Universit\"at Konstanz).} \\
+
+\vspace{1cm}
+ Segundo Cuatrimestre 2021
+ \\
+ {\small Facultad de Ciencias Exactas y Naturales, UBA}
+ \end{center}
+
+\end{frame}
+
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Motivación: optimización global de polinomios}
+
+Dado $f \in \R[\xb]$, consideramos el problema de optimización
+\begin{alignat*}{2}
+  f^{\star} = & & \sup \quad & f(\xb)    \\
+   & & \text{sujeto a:} \quad & \xb \in X
+\end{alignat*}
+y el \emph{problema generalizado de momentos} asociado
+\begin{alignat*}{2}
+  \rho_{\text{mom}} = & & \sup_{\mu \in \mathcal{M}(X)} & \int_X f d\mu   \\
+   & & \text{sujeto a: } & \int_X d\mu = 1.
+\end{alignat*}
+
+Ambos problemas son equivalentes. Es decir, $f^{\star} = \rho_{\text{mom}}$.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{El problema de los momentos - Introducción}
+
+Sea $X$ un subconjunto cerrado de $\R^n$ y $\borel = \borel(X)$ la $\sigma$-algebra generada por los conjuntos abiertos de $X$.
+
+Consideramos una medida de Borel en $X$
+$$
+\mu: \borel(X) \rightarrow [0, +\infty]
+$$
+tal que $\mu(K) < +\infty$ para cualquier subconjunto compacto $K$ de $X$.
+
+Para una medida $\mu$ en $\borel(\R^n)$, definimos el soporte de $\mu$, $\supp(\mu)$, como el complemento en $\R^n$ del mayor conjunto abierto $O \subset \R^n$ tal que $\mu(O) = 0$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Medidas de Borel - Ejemplos}
+
+Ejemplos:
+\begin{enumerate}
+\item Dada una función continua no-negativa $g$ en $X$, definimos para $M \in \borel$
+$$\mu(M) = \int_M g \ dx,$$
+la integral de Lebesgue de $g$ en $M$.
+\item Dado un subconjunto finito $E$ de $X$, y una función $g: E \rightarrow \R_{\ge 0}$, definimos para $M \in \borel$
+$$
+\mu(M) = \sum_{\xb \in M \cap E} g(\xb).
+$$
+\item (Medida de Dirac) Como caso particular, dado un punto $\xb \in X$ definimos la medida
+$$\delta_{\xb}(M) = \begin{cases}
+1 & \text{ si } \xb \in M, \\
+0 & \text{ si no. }
+\end{cases}
+$$
+\end{enumerate}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Integral de Lebesgue}
+
+A partir de una medida $\mu$ podemos definir la integral de Lebesgue con respecto a $\mu$, $f \rightarrow \int f d\mu$.
+
+En los ejemplos anteriores, tenemos
+\begin{enumerate}
+\item Si $\mu(M) = \int_M g dx$,
+$$\int_X f d\mu = \int_X f(x) g(x) dx.$$
+\item Si $\mu(M) = \sum_{x \in M \cap E} g(x)$,
+$$\int_X f d\mu = \sum_{x \in M \cap E} f(x) g(x).$$
+\end{enumerate}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{El problema generalizado de los momentos}
+
+Para $\mathcal{M}(X)$ el espacio de medidas de Borel  en $X$ positivas, definimos el problema generalizado de momentos (GMP)
+
+\begin{alignat*}{2}
+  \rho_{\text{mom}} = & & \sup_{\mu \in \mathcal{M}(X)} & \int_X f d\mu   \\
+   & & \text{sujeto a: } & \int_X h_j d\mu \le \gamma_j, \quad j \in \Gamma_1 \\
+  &  & & \int_X h_j d\mu = \gamma_j, \quad j \in \Gamma_2
+\end{alignat*}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Aplicación: optimización global de polinomios}
+
+Dado $f \in \R[\xb]$, consideramos el problema de optimización
+\begin{alignat*}{2}
+  f^{\star} = & & \sup \quad & f(\xb)    \\
+   & & \text{sujeto a:} \quad & \xb \in X
+\end{alignat*}
+y el problema generalizado de momentos asociado
+\begin{alignat*}{2}
+  \rho_{\text{mom}} = & & \sup_{\mu \in \mathcal{M}(X)} & \int_X f d\mu   \\
+   & & \text{sujeto a: } & \int_X d\mu = 1.
+\end{alignat*}
+
+\begin{theorem}
+Ambos problemas son equivalentes. Es decir, $f^{\star} = \rho_{\text{mom}}$.
+\end{theorem}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Demostración}
+
+Consideramos el caso $f^{\star} < + \infty$.
+
+Como $f(\xb) \le f^{\star}$ para todo $\xb \in X$,
+$$
+\int_X f d\mu \le \int_X f^{\star} d\mu  = f^{\star}
+$$
+y por lo tanto $\pmom \le f^{\star}$.
+
+Recíprocamente, para $\xb \in X$ tomamos la medida de Dirac
+$$\delta_{\xb} \in \MX,$$
+que es una solución factible del problema, con valor $f(\xb)$, y por lo tanto $\pmom \ge f^{\star}$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Momentos - Motivación}
+
+Dado un polinomio $f \in \R[x_1, \dots, x_n]$,
+$$
+f = f_{\alphab_1} \xb^{\alphab_1} + f_{\alphab_2} \xb^{\alphab_2} + \dots + f_{\alphab_s} \xb^{\alphab_s},
+$$
+con $\alphab_i \in \N_0^n$ podemos calcular su integral
+$$
+\int_X f d\mu = f_{\alphab_1} \int_X \xb^{\alphab_1} d\mu + f_{\alphab_2} \int_X \xb^{\alphab_2} d\mu + \dots + f_{\alphab_s} \int_X \xb^{\alphab_s}d\mu,
+$$
+conociendo las integrales de los monomios $\int_X \xb^{\alphab}$ para todo $\alphab \in \N_0^n$.
+
+Esto motiva a considerar el problema de los posibles valores que pueden tomar dichas integrales para entender las posibles medidas en $\MX$.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{El problema de los momentos}
+Dado un conjunto semi-algebraico básico $$S = \{\xb \in \R^n \mid g_1(\xb) \ge 0, \dots, g_m(\xb) \ge 0\} \subset \R^n$$
+definido por polinomios $g_1, \dots, g_m \in \R[\xb]$, consideramos los problemas:
+
+\textbf{El problema de momentos completo.}
+Dada una sucesión infinita $\yb = (y_{\alphab}) \subset \R$ de números reales, con $\alphab \in \N_0^n$, ¿existe una medida $\mu$ con soporte en $S$ tal que
+$$
+y_{\alphab} = \int_S \xb^{\alphab} d\mu \quad \forall \alphab \in \N_0^n?
+$$
+
+\textbf{El problema de momentos truncado.}
+Dado un conjunto finito $\Delta \subset \N_0^n$ y una sucesión finita $\yb = (y_{\alphab})_{\alphab \in \Delta} \subset \R$ de números reales, ¿existe una medida $\mu$ con soporte en $S$ tal que
+$$
+y_{\alphab} = \int_S \xb^{\alphab} d\mu \quad \forall \alphab \in \Delta?
+$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejercicio}
+
+En $\R^2$, para un conjunto $S$ tal que $(3,-1) \in S$, calcular la sucesión
+$$y_{\alphab} = \int_S \xb^{\alphab} d\mu$$
+ para la medida
+$$\mu(X) = \delta_{(3,-1)}(X).$$
+
+Utilizar esta sucesión para calcular $p(3,-1)$ para
+$$p(x,y) = x^2y^3 - 2x + 1.$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{La integral como funcional lineal}
+
+Recordemos que para $f(\xb) = \sum_{\alphab \in \N^n} f_{\alphab} \xb^{\alphab}$,
+$$
+\int_X f d\mu = \sum_{\alphab \in \N^n} f_{\alphab} \int_X \xb^{\alphab} d\mu.
+$$
+
+Motivados por esta fórmula, para una secuencia infinita $\yb = (y_{\alphab}) \subset \R$ definimos la funcional lineal $L_{\yb}: \R[\xb] \rightarrow \R$ por
+$$
+f(\xb) = \sum_{\alphab \in \N^n} f_{\alphab} \xb^{\alphab} \mapsto L_{\yb}(f) = \sum_{\alphab \in \N^n} f_{\alphab} y_{\alphab}.
+$$
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{El teorema de Riesz-Haviland}
+
+El siguiente teorema (que vemos sin demostración) será clave para resolver algunos casos del problema de momentos.
+
+\begin{theorem}[Riesz-Haviland]
+\label{teo:Riesz}
+Sea $\yb = (y_{\alphab})_{\alphab \in \N_0^n} \subset \R$ y sea $K \subset \R^n$ un conjunto cerrado.
+Existe una medida de Borel finita $\mu$ en $K$ tal que
+$$
+\int_K \xb^{\alphab} d\mu = y_{\alphab}, \quad \forall \alphab \in \N_0^n,
+$$
+si y solo si $L_{\yb}(f) \ge 0$ para todos los polinomios $f \in \R[\xb]$ no-negativos en $K$.
+\end{theorem}
+
+\textbf{Observación:} La implicación $\Rightarrow$ es inmediata.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{El problema de los momentos en una variable}
+
+\textbf{Matrices de Hankel}
+
+Dada una sucesión $\yb = (y_i)_{i \in \N_0} \subset \R$, definimos las matrices de Hankel $H_n(\yb) \in \R^{(n+1) \times (n+1)}$ por
+\begin{align*}
+H_n(\yb)(i,j) &:= y_{i+j-2},
+\end{align*}
+para todo $i, j \in \N$, $1 \le i,j \le n+1$.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejemplo}
+
+Para $\yb = (1,2,3,4,5,6,7,8,0,0,0, \dots)$,
+$$
+H_3 = \begin{pmatrix}
+y_0 & y_1& y_2 & y_3\\
+y_1 & y_2 & y_3 & y_4\\
+y_2 & y_3 & y_4 & y_5 \\
+y_3 & y_4 & y_5 & y_6 
+\end{pmatrix} = 
+\begin{pmatrix}
+1 & 2 & 3 & 4\\
+2 & 3 & 4 & 5\\
+3 & 4 & 5 & 6\\
+4 & 5 & 6 & 7
+\end{pmatrix}.
+$$
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{El problema de los momentos de Hamburger}
+
+\begin{theorem}
+\label{it:hankel} 
+Sea $\yb = (y_j)_{j \in \N_0} \subset \R$. Existe una medida de Borel $\mu$ que representa a $\yb$ en $\R$ si y solo si la forma cuadrática
+\begin{equation}
+\label{eq:hankel}
+\qb \mapsto s_n(\qb) := \sum_{i,j = 0}^n y_{i+j} q_i q_j
+\end{equation}
+es positiva semidefinida para todo $n \in \N$. 
+
+Equivalentemente, $H_n(\yb) \succeq 0$ para todo $n \in \N$.
+\end{theorem}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Demostración}
+
+$(\Rightarrow)$ Si $y_n = \int_\R z^n d\mu(z)$, entonces
+\begin{align*}
+s_n(\qb) &= \sum_{i,j = 0}^n y_{i+j} q_i q_j \\
+&= \sum_{i,j = 0}^n q_i q_j \int_{\R} z^{i+j} d\mu(z) \\
+& = \int_{\R} \left(\sum_{i,j = 0}^n q_i q_j z^{i+j} \right) d\mu(z) = \int_{\R} \sum_{i,j = 0}^n (q_i z^i) (q_j z^j) d\mu(z)\\
+& = \int_\R (\sum_{i=0}^n q_i z^i)^2 d\mu(z) \ge 0.
+\end{align*}
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Demostración}
+
+Recíprocamente, si $H_n(\yb) \succeq 0$ para todo $n \in \N$ y
+$$f = \sum_{k=0}^{2d} f_k x^k \in \R[x]$$ 
+ un polinomio no-negativo en $\R$, veamos que $\sum_{k=0}^{2d} f_k y_k = L_{\yb}(f) \ge 0$.
+
+Recordemos que $f$ se puede escribir como una suma de cuadrados $f = \sum_{j = 1}^r g_j^2$. Luego,
+$$
+L_{\yb}(f) = L_{\yb}(\sum_{j=1}^r g_j^2) = \sum_{j=1}^r L_{\yb}(g_j^2).
+$$
+
+Veamos que $L_{\yb}(g^2) \ge 0$ para cualquier polinomio $g \in \R[x]$.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Demostración}
+
+Para todo $\qb \in \R^{n+1}$ tenemos $\qb^t H_n(\yb) \qb \ge 0$.
+
+Ahora 
+\begin{align*}
+L_{\yb}(g^2) &= L_{\yb}\left((\sum_{j=0}^d g_j x^j)^2\right) \\
+&= L_{\yb}\left(\sum_{i,j} g_i g_j x^{i+j}\right) \\
+&= \sum_{0 \le i,j \le d} g_i g_j y_{i+j} = \gb^t H_d(\yb) \gb \ge 0.
+\end{align*}
+
+Como $f \ge 0$ es arbitrario, obtenemos por el Teorema \ref{teo:Riesz} que $y_i = \int_\R x^i d\mu$ para alguna medida $\mu$ en $\R$.
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejemplo}
+
+Repasamos la construcción paso a paso en los siguientes ejemplos:
+
+\begin{enumerate}
+\item Hallar $\max_{x \in \R} 1 - x^2$.
+\item Hallar $\min_{x \in \R} x^2 - 2x + 5$.
+\end{enumerate}
+
+En el primer caso, el problema es equivalente a 
+\begin{alignat*}{2}
+  \rho_{\text{mom}} = & & \sup_{\mu \in \mathcal{M}(\R)} & \int_{\R} 1 - x^2 d\mu   \\
+   & & \text{sujeto a: } & \int_\R d\mu = 1.
+\end{alignat*}
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejemplo}
+
+Por linealidad, 
+$$
+\int_{\R} 1 - x^2 d\mu = \int_{\R} 1 d\mu - \int_{\R} x^2 d\mu
+$$
+y definiendo $y_i = \int_{\R} x^i d\mu$, 
+$$
+\int_{\R} 1 - x^2 d\mu = y_0 - y_2.
+$$
+
+La restricción $\int_\R d\mu = 1$ nos da $y_0 = 1$.
+
+Por lo tanto, nuestro problema se convierte en
+\begin{alignat*}{2}
+  \rho_{\text{mom}} = & & \sup_{\yb = (y_0, y_1, y_2, \dots)} & y_0 - y_2   \\
+   & & \text{sujeto a: } & y_0 = 1, \\
+   &&& \text{existe una medida $\mu$ que representa a $\yb$ en $\R$.}
+\end{alignat*}
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejemplo}
+
+A la vez, este último problema es equivalente a 
+\begin{alignat*}{2}
+  \rho_{\text{mom}} = & & \sup_{\yb = (y_0, y_1, y_2, \dots)} & y_0 - y_2   \\
+   & & \text{sujeto a: } & y_0 = 1, \\
+   &&& \begin{pmatrix} 
+   y_0 & y_1 & y_2 & \dots & y_n\\
+   y_1 & y_2 & y_3 & &  \\
+   y_2 & y_3 & y_4 & &\vdots \\
+   \vdots & &  &  & \\
+   y_n & & \cdots &  & y_{2n}
+   \end{pmatrix} \succeq 0 \ \text{ para todo } n \in \N
+\end{alignat*}
+
+
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejemplo}
+
+En particular 
+$$\begin{pmatrix}
+   1 & y_1 \\
+   y_1 & y_2 \\
+   \end{pmatrix} \succeq 0 
+$$ 
+y esto nos da las restricciones $y_2 \ge 0$ y $y_2 \ge y_1^2$.
+
+El máximo de $1 - y_2$ en esta región se da para $y_2 = 0$. Por lo tanto, obtenemos $$\max_{x \in \R} 1 - x^2 \le 1.$$
+
+Tomando la sucesión $\yb = (1, 0, 0, 0, \dots)$, vemos que $$\max_{x \in \R} 1 - x^2 = 1.$$
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejemplo}
+
+En el caso de $\min_{x \in \R} x^2 - 2x + 5$, obtenemos en forma análoga el problema equivalente
+\begin{alignat*}{2}
+  \rho_{\text{mom}} = & & \inf_{\yb = (y_0, y_1, y_2, \dots)} & 5 y_0 - 2 y_ 1 + y_2   \\
+   & & \text{sujeto a: } & y_0 = 1, \\
+   &&& \begin{pmatrix}
+   y_0 & y_1 & y_2 & \dots & y_n\\
+   y_1 & y_2 & y_3 & &  \\
+   y_2 & y_3 & y_4 & &\vdots \\
+   \vdots & &  &  & \\
+   y_n & & \cdots &  & y_{2n}
+   \end{pmatrix} \succeq 0 \ \text{ para todo } n \in \N
+\end{alignat*}
+
+Vemos que al modificar el polinomio, solo cambia la función objetivo, pero no la región de factibilidad.
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{Ejemplo}
+
+En este caso, el mínimo de $5 - 2 y_ 1 + y_2$ en la región $y_2 \ge 0$ y $y_2 \ge y_1^2$ se alcanza para
+$$
+y_1 = y_2 = 1
+$$
+y por lo tanto $$\min_{x \in \R} x^2 - 2x + 5 \ge 5 - 2 + 1 = 4.$$
+
+Tomando la sucesión $\yb = (1, 1, 1, 1, \dots)$, vemos que $$\min_{x \in \R} x^2 - 2x + 5 = 4.$$
+
+Encontrar condiciones para las cuales es posible extender una sucesión finita $(y_0, y_1, \dots, y_n)$ a una sucesión representada por una medida $\mu$ se conoce como el problema truncado de los momentos.
+
+\end{frame}
+
+%------------------------------------------------------------------
+
+\begin{frame}
+
+\frametitle{El problema de los momentos de Stieltjes}
+
+Si en lugar de tomar $X = \R$ tomamos $X = \R_{\ge 0}$, el problema correspondiente se conoce como el problema de los momentos de Stieltjes.
+
+Dada una sucesión $y = (y_i) \subset \R$, definimos la matricez de Hankel $B_n(y) \in \R^{(n+1) \times (n+1)}$ por
+$B_n(y)(i,j) := y_{i+j-1}$, 
+para todo $i, j \in \N$, $1 \le i,j \le n+1$.
+
+\begin{theorem}
+Sea $\yb = (y_j)_{j \in \N_0} \subset \R$. Existe una medida de Borel $\mu$ que representa a $\yb$ en $\R_{\ge 0}$ si y solo si $\Hb_n(\yb) \succeq 0$ y $\Bb_n(\yb) \succeq 0$ para todo $n \in \N$.
+\label{it:stieltjes}
+\end{theorem}
+
+\textbf{Demostración:} Ejercicio. Utilizar que $p \in \R[x]$ es no-negativo en $[0, +\infty)$ si y solo si 
+$p = f_0 + x f_1$ para $f_0, f_1$ polinomios sumas de cuadrados.
+\end{frame}
+
+\end{document} 

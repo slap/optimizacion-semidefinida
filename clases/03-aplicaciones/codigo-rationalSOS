@@ -1,0 +1,69 @@
+#######################################################################
+# Load "Rational SOS" procedures
+#######################################################################
+read("rationalSOS.mpl"):
+with(rationalSOS):
+with(LinearAlgebra):
+
+# Display tables of any size
+interface(rtablesize=infinity);
+
+
+
+# Ejemplo 1 : suma de cuadrados de grado 2 en 3 variables
+
+f1 := x1^2- x3^2;
+f2 := x2^2- x3^2;
+f3 := x1^2- x2^2;
+
+f := f1^2+f2^2+f3^2;
+
+# Utilizamos SEDUMI para calcular una descomposición como suma de cuadrados.
+
+# La función objetivo "eig" maximiza el valor del menor autovalor.
+out := exactSOS(f, objFunction = "eig", computePolynomialDecomposition = "no"):
+eig(out[3]);
+
+# La función objetivo "atomic" minimiza la norma nuclear.
+out := exactSOS(f, objFunction = "atomic", computePolynomialDecomposition = "no"):
+eig(out[3]);
+
+
+# Ejemplo 2 : suma de cuadrados de grado 2 en 3 variables
+
+f1 := x1^2- x3^2;
+f2 := x2^2- x3^2;
+f3 := x1^2- 3 * x2^2;
+
+f := f1^2+f2^2+f3^2;
+
+# La función objetivo "eig" maximiza el valor del menor autovalor.
+out := exactSOS(f, objFunction = "eig", computePolynomialDecomposition = "no"):
+eig(out[3]);
+
+# La función objetivo "atomic" minimiza la norma nuclear.
+out := exactSOS(f, objFunction = "atomic", computePolynomialDecomposition = "no"):
+eig(out[3]);
+
+# La función objetivo "random" minimiza una función linear con coeficientes aleatorios.
+out := exactSOS(f, objFunction = "random", computePolynomialDecomposition = "no"):
+eig(out[3]);
+
+
+# Ejemplo 3 : suma de cuadrados de 4 polinomios de grado 2 en 4 variables
+
+p1 := x1^2 + 3 * x2 * x4 - x2 ^2;
+p2 := x2^2 - x4^2;
+p3 := x3^2 - 2 * x1 * x4 + x3^2;
+p4 := x1*x2 + x3*x4;
+f := p1^2+p2^2+p3^2+p4^2;
+
+out := exactSOS(f, objFunction = "random"):
+eig(out[3]);
+
+out := exactSOS(f, objFunction = "eig", computePolynomialDecomposition = "no"):
+eig(out[3]);
+
+out := exactSOS(f, objFunction = "atomic", computePolynomialDecomposition = "no"):
+eig(out[3]);
+
