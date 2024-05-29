@@ -1,0 +1,142 @@
+\documentclass[11pt]{article}
+%\include{amsfonts}
+%\usepackage{amssymb,amsmath,latexsym,epsfig,euscript}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{multicol}
+
+\usepackage{bm}
+
+
+%
+\def\d{\displaystyle}
+%
+\usepackage[heightrounded]{geometry}
+\geometry{top=2cm,bottom=2cm,left=2cm,right=2cm}
+\parindent=0pt
+
+\usepackage{graphicx}
+\graphicspath{ {../images} }
+
+\input{../latex/preamble}
+
+
+\begin{document}
+
+\begin{center}
+
+{\small Facultad de Ciencias Exactas
+y Naturales -- Universidad de Buenos Aires } \vskip 1cm
+
+\textbf{{\large Optimización Semidefinida} - Segundo Cuatrimestre 2021}
+
+\medskip\textbf{Pr\'actica 4 - Sumas de cuadrados}
+\end{center}
+
+\medskip
+
+\textbf{Para entregar:} entregar un ejercicio a elección entre los marcados ($\diamondsuit$).
+
+\vspace{0.5cm}
+
+\begin{enumerate}
+
+\item Calcular las raíces de
+$$
+p(x) = x^4 + 2x^3 + 6x^2 - 22x + 13
+$$
+y obtener una descomposición de $p(x)$ como suma de cuadrados.
+
+\item Encontrar una descomposición como suma de cuadrados de
+$$
+p(x) = x^4 + 4x^3 + 6x^2 + 4x + 5
+$$
+resolviendo a mano el problema SDP asociado.
+
+\item Un polinomio trigonométrico de grado $d$ es una expresión de la forma
+$$
+p(\theta) = a_0 + \sum_{k=1}^d (a_k \cos{k \theta} + b_k \sin{k \theta}).
+$$
+\begin{enumerate}
+\item Probar que si $p(\theta)$ es un polinomio trigonométrico de grado $2d$ y $p(\theta) \ge 0$ para todo $\theta \in [-\pi, \pi]$, entonces $p$ admite una descomposición
+    $$
+    p(\theta) = q_1^2(\theta) + q_2^2(\theta)
+    $$
+con $q_1$, $q_2$ polinomios trigonométricos.
+
+\item Plantear un problema SDP para determinar un polinomio trigonométrico $p(\theta)$ de grado $2d$ satisface $p(\theta) \ge 0$ para todo $\theta$.
+
+\item Hallar una descomposición como suma de cuadrados de polinomios trigonométricos de la función
+$$
+p(\theta) = 4 - \sin(\theta) + \sin(2\theta) - 3 \cos(2\theta).
+$$
+
+\end{enumerate}
+
+\item (*) ($\diamondsuit$) Demostrar un polinomio de grado 2 en $n$ variables es positivo si y solo si se puede escribir como una suma de cuadrados.
+
+\item (*) Demostrar que el problema de determinar si un polinomio es positivo (o no-negativo) es un problema NP-hard, reduciendo otro problema NP-hard a este problema.
+
+\item Calcular a mano una escritura como suma de cuadrados para el polinomio
+$$
+p(x_1, x_2) = x_1^2 - x_1 x_2^2 + x_2^4 + 1.
+$$
+
+\item Hallar fórmulas combinatorias para la cantidad de monomios de grado $d$ en $n$ variables y para la cantidad de monomios de grado menor o igual que $d$ en $n$ variables.
+
+\item Utilizando Mosek, obtener una descomposición como suma de cuadrados de
+$$
+p(x,y,z,w) = 2x^4 + x^2y^2 + y^4 - 4x^2 - 4xyz - 2y^2w + y^2 - 2yz + 8z^2 - 2zw + 2w^2.
+$$
+    
+\item ($\diamondsuit$) \textbf{Descomposición de polinomios homogéneos.}
+
+\begin{enumerate}
+\item Implementar en Mosek un programa para determinar si un polinomio homogéneo de grado $2d$ en $n$ variables admite una descomposición como suma de cuadrados resolviendo el problema SDP $p = \vb^t \Qb \vb$, $\Qb \succeq 0$, con $\vb$ el vector de monomios de grado $d$ en $n$ variables.
+\item Utilizar el programa para determinar si el polinomio 
+$$
+p(x,y,z) = 2(x^6 + y^6 + z^6) - 2(x^4y^2 + x^4z^2 + y^4x^2 + y^4z^2 + z^4x^2 + z^4y^2) + 6x^2y^2z^2
+$$
+admite una descomposición como suma de cuadrados.
+
+\item Hallar $\beta_1 > 0$ tal que $p(x,y,z) + \beta(x^6 + y^6 + z^6)$ sea una suma de cuadrados.
+\end{enumerate}
+
+\item En el ejercicio anterior, hallar $\beta_2 > 0$ tal que $p(x,y,z) + \beta(x^6 + y^6 + z^6)$ no sea una suma de cuadrados.
+
+\item Considerar el polinomio $f \in \R[x,y,z]_6$,
+$$
+p=x^6 + y^6 + 7(x^4 + y^4)z^2 + 18x^2y^2z^2 - 23(x^2 + y^2) z^4 + 16 z^6
+$$
+
+Verificar en Mosek mediante distintas funciones objetivo que existe una única matriz $\Qb \succeq 0$ tal que $p = \vb^t \Qb \vb$.
+
+\item \textbf{(Descomposición racional)} Dado un polinomio $p(\xb) \in \Q[\xb]_{2d}$, demostrar que $p$ se puede escribir como una suma de cuadrados de polinomios en $\Q[\xb]$ si y solo si existe una matriz $\Qb$ con entradas racionales en el espectrahedro de Gram de $p$ (es decir una matriz racional $\Qb \succeq 0$ tal que $p = \vb^t \Qb \vb$ para $\vb$ el vector de monomios de grado $d$).
+    
+\item Dado un polinomio $p(\xb) \in \Q[\xb]_{2d}$, probar que si el problema $p = \vb^t \Qb \vb$, $\Qb \succeq 0$, es estrictamente factible, entonces $p$ admite una descomposición como suma de cuadrados con coeficientes racionales.
+
+
+\item ($\diamondsuit$) Resolver utilizando Mosek el siguiente problema SOS
+\begin{alignat*}{2}
+  & \text{maximizar: } & & y_1 + y_2  \\
+  & \text{sujeto a: } & \quad & x^4 + y_1 x + (2 + y_2) \quad \text{es SOS,} \\
+  &  & \quad & (y_1 - y_2 + 1)x^2 + y_2 x + 1 \quad  \text{es SOS.}
+\end{alignat*}
+
+\item ($\diamondsuit$) Plantear el problema de hallar el mínimo global de la función
+$$
+q(x) = \frac{x^3 - 8x + 1}{x^4 + x^2 + 12}
+$$
+como un programa SOS. Resolver el problema en Mosek.
+
+    
+    
+    
+
+\end{enumerate}
+
+
+
+Los ejercicios marcados (*) son optativos y pueden involucrar temas no vistos en la materia.
+\end{document}

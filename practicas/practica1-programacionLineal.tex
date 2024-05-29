@@ -1,0 +1,184 @@
+\documentclass[11pt]{article}
+%\include{amsfonts}
+%\usepackage{amssymb,amsmath,latexsym,epsfig,euscript}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{multicol}
+
+\usepackage{bm}
+
+\def\C{\mathbb{C}}
+\def \N{\mathbb{N}}
+\def \Q{\mathbb{Q}}
+\def \R{\mathbb{R}}
+\def \Z{\mathbb{Z}}
+
+\newcommand{\inner}[2]{#1 \boldsymbol{\cdot} #2}
+\newcommand{\innerTrace}[2]{#1 \bullet #2}
+
+\newcommand{\vb}{\bm{v}}
+\newcommand{\ub}{\bm{u}}
+\newcommand{\wb}{\bm{w}}
+\newcommand{\bb}{\bm{b}}
+\newcommand{\xb}{\bm{x}}
+\newcommand{\yb}{\bm{y}}
+\newcommand{\zb}{\bm{z}}
+\newcommand{\eb}{\bm{e}}
+\newcommand{\ab}{\bm{a}}
+\newcommand{\cb}{\bm{c}}
+\newcommand{\db}{\bm{d}}
+\newcommand{\pb}{\bm{p}}
+\newcommand{\qb}{\bm{q}}
+\newcommand{\Ab}{\bm{A}}
+\newcommand{\Bb}{\bm{B}}
+\newcommand{\Cb}{\bm{C}}
+\newcommand{\Eb}{\bm{E}}
+\newcommand{\Fb}{\bm{F}}
+\newcommand{\Gb}{\bm{G}}
+\newcommand{\Lb}{\bm{L}}
+\newcommand{\Mb}{\bm{M}}
+\newcommand{\Ub}{\bm{U}}
+\newcommand{\Qb}{\bm{Q}}
+\newcommand{\Rb}{\bm{R}}
+\newcommand{\Sb}{\bm{S}}
+\newcommand{\Vb}{\bm{V}}
+\newcommand{\Db}{\bm{D}}
+\newcommand{\Pb}{\bm{P}}
+\newcommand{\Ib}{\bm{I}}
+\newcommand{\Hb}{\bm{H}}
+\newcommand{\Xb}{\bm{X}}
+\newcommand{\cero}{\bm{0}}
+
+%
+\def\d{\displaystyle}
+%
+\usepackage[heightrounded]{geometry}
+\geometry{top=2cm,bottom=2cm,left=2cm,right=2cm}
+\parindent=0pt
+
+\begin{document}
+
+\begin{center}
+
+{\small Facultad de Ciencias Exactas
+y Naturales -- Universidad de Buenos Aires } \vskip 1cm
+
+\textbf{{\large Optimización Semidefinida} - Segundo Cuatrimestre 2021}
+
+\medskip\textbf{Pr\'actica 1 - Programación Lineal}
+\end{center}
+
+\medskip
+
+\textbf{Para entregar:} entregar un ejercicio a elección entre los marcados ($\diamondsuit$) y un ejercicio a elección entre los marcados ($\clubsuit$).
+
+\begin{enumerate}
+
+\item (Python) Resolver utilizando el comando \texttt{linalg.solve} de \texttt{numpy} el sistema de ecuaciones
+$$\left\{
+\begin{array}{ccc}
+x_1+x_2-2x_3 &=& -2 \\
+3x_1-2x_2+x_3 &=& 3 \\
+x_1-x_2+x_3 &=& 2 \end{array}\right.
+$$
+
+\item (Python) Para el sistema de ecuaciones
+$$
+\left\{
+\begin{array}{ccc}
+x_1+x_2-2x_3+x_4 &=& -2 \\ 3x_1-2x_2+x_3+5x_4 &=& 3 \\
+x_1-x_2+x_3+2x_4 &=& 2 \end{array}\right.
+$$
+hallar en Python una solución particular del sistema, y generadores del espacio de soluciones del sistema homogéneo. ¿Cuáles son todas las soluciones del sistema?
+
+\item \label{ej:metodografico} ($\diamondsuit$) Resolver por el método gráfico
+\begin{alignat*}{2}
+  & \text{maximizar: } & & z = 3x + 2y \\
+   & \text{sujeto a: } & \quad & x + 2y \le 4, \\
+   & & & x-y \le 1, \\
+   & & & x \ge 0, \\
+   & & & y \ge 0.
+\end{alignat*}
+
+\item  ($\diamondsuit$) Considerar el problema
+\begin{alignat*}{2}
+  & \text{minimizar: } & & z = 5x + 7y \\
+   & \text{sujeto a: } & \quad & 2x + 3y \ge 6, \\
+   & & & 3x-y \le 15, \\
+   & & & -x + 4y \le 4, \\
+   & & & 2x + 5y \le 27, \\
+   & & & x \ge 0, \\
+   & & & y \ge 0.
+\end{alignat*}
+\begin{enumerate}
+\item Graficar el conjunto factible.
+\item Hallar las coordenadas de todos los vértices del conjunto.
+\item Evaluar la función objetivo en cada uno de los vértices.
+\item ¿Cuál es la solución del problema?
+\end{enumerate}
+
+\item  ($\diamondsuit$) La parte líquida de una dieta debe proveer por día al menos 300 calorías, 36 unidades de vitamina A y 90 unidades de vitamina C.
+Un vaso de una bebida dietética X provee 60 calorías, 12 unidades de vitamina A y 10 unidades de vitamina C.
+Un vaso de una bebida dietética Y provee 60 calories, 6 unidades de vitamin A y 30 unidades de vitamina C.
+La bebida X tiene un costo de \$12 por vaso y la bebida Y tiene un costo de \$15 por vaso. ¿Cuántos vasos de cada bebida deben tomarse por día si se quiere minimizar el costo total y cumplir con todos los requerimientos de la dieta?
+
+
+\item \label{ej:primal} Hallar vectores $\cb$ y $\bb$ y una matriz $\Ab$ tales que el problema del Ejercicio \ref{ej:metodografico} quede planteado de la forma
+\begin{alignat*}{2}
+  & \text{maximizar: } & \quad & \inner{\cb}{\xb} \\
+   & \text{sujeto a: } & & \Ab \xb \le \bb, \\
+   & & & \xb \ge 0,
+\end{alignat*}
+para $\xb = (x, y)$.
+
+
+\item ($\clubsuit$) Escribir un programa que dada una matriz $\Ab \in \R^{m \times n}$, un vector $\bb \in \R^m$ y un vector $\xb \in \R^n$, determine si se satisfacen las condiciones
+\begin{align*}
+& \Ab \xb \le \bb \\
+& \xb \ge 0
+\end{align*}
+
+\item ($\clubsuit$) Escribir un programa que dado un vector $\cb \in \R^n$ y una lista de vectores $[\xb_1, \dots, \xb_s]$ en $\R^n$, devuelva el valor máximo de $\inner{\cb}{\xb_i}$, $1 \le i \le s$.
+
+
+\item Agregando variables de holgura, llevar el problema del Ejercicio \ref{ej:primal} a la forma
+\begin{alignat*}{2}
+  & \text{maximizar: } & \quad & \inner{\cb}{\xb} \\
+   & \text{sujeto a: } & & \Ab \xb = \bb, \\
+   & & & \xb \ge 0. \\
+\end{alignat*}
+
+
+\item Dado el problema
+\begin{alignat*}{2}
+  & \text{maximizar: } & \quad & -2x + 3y - 5z \\
+   & \text{sujeto a: } & & 7x - 5y + 6z \le 10 , \\
+   & & & -2x + 8y - 4z \le 3, \\
+   & & & 9x -2y - 5z \le 4, \\
+   & & & y, z \ge 0,
+\end{alignat*}
+en el cuál no tenemos la restricción $x \ge 0$, ¿cómo podemos plantearlo como un conjunto de problemas en forma estándar? ¿Cómo podemos plantearlo como un único problema en forma estándar? Resolver ambas posibilidades y comparar.
+
+
+\item ($\clubsuit$) Escribir un programa que reciba $\cb$, $\Ab$ y $\bb$ correspondientes a un problema de programación lineal en forma estándar
+\begin{alignat*}{2}
+  & \text{maximizar: } & \quad & \inner{\cb}{\xb} \\
+   & \text{sujeto a: } & & \Ab \xb = \bb, \\
+   & & & \xb \ge 0,
+\end{alignat*}
+calcule todos los vértices del conjunto factible y determine el valor máximo de la función objetivo sobre los vértices.
+
+\item ($\clubsuit$) Escribir un programa que reciba $\cb$, $\Ab$ y $\bb$ correspondientes a un problema de programación lineal en forma estándar
+\begin{alignat*}{2}
+  & \text{maximizar: } & \quad & \inner{\cb}{\xb} \\
+   & \text{sujeto a: } & & \Ab \xb = \bb, \\
+   & & & \xb \ge 0, \\
+\end{alignat*}
+resuelva el problema utilizando el método Simplex.
+
+
+
+
+\end{enumerate}
+\end{document}
