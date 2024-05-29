@@ -1,0 +1,589 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+%\include{amsfonts}
+%\usepackage{amssymb,amsmath,latexsym,epsfig,euscript}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{multicol}
+
+\usepackage{bm}
+
+
+%
+\def\d{\displaystyle}
+%
+\usepackage[heightrounded]{geometry}
+\geometry{top=2cm,bottom=2cm,left=2cm,right=2cm}
+\parindent=0pt
+
+\usepackage{graphicx}
+
+\graphicspath{ {../../images} }
+\input{../latex/preamble}
+
+
+\begin{document}
+
+
+\begin{center}
+
+{\small Facultad de Ciencias Exactas
+y Naturales -- Universidad de Buenos Aires } \vskip 1cm
+
+\textbf{{\large Optimización Semidefinida} - Segundo Cuatrimestre 2021}
+
+\medskip\textbf{Primeros pasos en Mosek}
+\end{center}
+
+\medskip
+
+Referencia principal MOSEK Optimizer API for Python 9.3.6
+
+https://docs.mosek.com/latest/pythonapi/index.html
+
+Ver Sección 6.6 - Semidefinite optimization.
+
+\section{Instalación}
+Seguir los siguientes pasos:
+
+\begin{enumerate}
+\item Obtener el archivo de licencia mosek.lic en la página
+
+\url{https://www.mosek.com/products/academic-licenses/}
+
+solicitando la licencia personal académica. Se requiere cuenta de correo electrónica académica.
+
+\item En Windows, crear una carpeta con nombre mosek en la carpeta principal del usuario. Por ejemplo, si el usuario de Windows es jperez, crear la carpeta mosek en \url{C:\Users\jperez}
+
+\item Guardar el archivo de licencia en la carpeta creada. 
+
+\item Instalar mosek utilizando Anaconda Power Shell Prompt mediante el comando
+
+\begin{lstlisting}
+conda install -c mosek mosek
+\end{lstlisting}
+
+(ver \url{https://docs.mosek.com/latest/pythonapi/install-interface.html} para otras opciones)
+
+\item Probar la instalación en Jupyter Notebook, ejecutando por ejemplo el código disponible en la página
+
+\url{https://docs.mosek.com/latest/pythonapi/tutorial-sdo-shared.html}
+
+\end{enumerate}
+
+\section{Ejemplo 1}
+
+Vamos a resolver el siguiente ejemplo:
+\begin{alignat*}{2}
+  & \text{minimizar: } & & x_{11} \\
+  & \text{sujeto a: } & & x_{00} = 1 \\
+  & & & x_{01} = 3 \\
+  & & & \begin{pmatrix} x_{00} & x_{01} \\ x_{01} & x_{11} \end{pmatrix} \succeq 0.
+\end{alignat*}
+(numeramos filas y columnas a partir de 0 para compatbilidad con Python).
+
+Comparando con la forma general del problema SDP en Mosek descripto en \url{https://docs.mosek.com/latest/pythonapi/tutorial-sdo-shared.html}, tenemos:
+
+\begin{enumerate}
+\item $p = 1$, hay una sola matriz $\Xb$ sobre la que tenemos la condición $\Xb \succeq 0$.
+\item Por lo tanto, el único valor de $j$ es $j = 0$ y $\bar \Xb_0 = \begin{pmatrix} x_{00} & x_{01} \\ x_{01} & x_{11} \end{pmatrix}$.
+\item $r_0 = 2$, es la dimensión de la matrix $\Xb_0$.
+\item La función a minimizar es $0 x_{00} + 0 x_{01} + 1 x_{11}$, que con la notación $\langle \Ab, \Bb \rangle = \sum \sum a_{ij} b_{ij}$, corresponde a 
+    $$
+    \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix} \begin{pmatrix} x_{00} & x_{01} \\ x_{01} & x_{11} \end{pmatrix},
+    $$
+    por lo tanto, $\bar \Cb_0 = \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix}$.
+\item No hay variables adicionales $x_j$ en la función a minimizar, por lo tanto, $n = 0$.
+\item Tenemos dos restricciones sobre los coeficientes de $\Xb$, por lo tanto $m = 2$ y  las dos restricciones van indexadas con la variable $i = 0, 1$.
+\item La restricción $x_{00} = 1$ la escribimos como 
+$$
+\begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}
+\begin{pmatrix} x_{00} & x_{01} \\ x_{01} & x_{11} \end{pmatrix} = 1
+$$
+y la restricción $x_{01} = 3$ la escribimos como
+$$
+\begin{pmatrix} 0 & 1/2 \\ 1/2 & 0 \end{pmatrix}
+\begin{pmatrix} x_{00} & x_{01} \\ x_{01} & x_{11} \end{pmatrix} = 3
+$$
+(observar que todas las matrices deben ser simétrica).
+Obtenemos
+$$
+\bar \Ab_{00} = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} \quad \text { y }
+\bar \Ab_{10} = \begin{pmatrix} 0 & 1/2 \\ 1/2 & 0 \end{pmatrix}.
+$$
+\end{enumerate}
+
+Ahora estamos en condiciones de escribir el programa en Mosek, reemplazando el código correspondiente en el primer ejemplo de \url{https://docs.mosek.com/latest/pythonapi/tutorial-sdo-shared.html}.
+
+\begin{enumerate}
+\item Construimos la matriz $\bar C_0$ definiéndola en forma esparsa con tres listas barci, barcj y barcval de la misma longitud $k$. Para cada índice $a$, $0 \le a \le k$, se asigna una coordenada de $C$ por la fórmula 
+    $$c_{(\texttt{barci[a]}, \texttt{barcj[a]})} = \texttt{barcval[a]}.$$
+    En nuestro ejemplo hay un solo coeficiente no nulo en $\bar C_0$: $c_{11} = 1$ y por lo tanto definimos
+\begin{lstlisting}    
+barci = [1]
+barcj = [1]
+barcval = [1.0]
+\end{lstlisting}
+
+\item De la misma forma definimos las matrices $\bar A_{i0}$. En este caso como son varias matrices, las definimos mediante listas de listas. Cada lista indica los coeficientes de una matriz. Obtenemos
+\begin{lstlisting}
+barai = [[0], [1]]
+baraj = [[0], [0]]
+baraval = [[1.0], [0.5]]
+\end{lstlisting}
+
+Notar que solo definimos las matrices para las coordenadas $i \ge j$, y las otras coordenadas quedan definidas por simetr\'ia (si definimos alguna coordenada $j > i$ nos tira error).
+
+\item Ahora definimos las restricciones que corresponden a cada matriz $\Ab_i$. En nuestro caso tenemos dos restricciones de igualdad, por lo tanto definimos
+\begin{lstlisting}
+bkc = [mosek.boundkey.fx, mosek.boundkey.fx]
+\end{lstlisting}
+
+En esta definici\'on podemos modificar fx por otras restricciones, ver la tabla
+\url{https://docs.mosek.com/latest/javaapi/tutorial-lo-shared.html#doc-optimizer-tab-boundkeys2}.
+
+\item Y fijamos las restricciones
+\begin{lstlisting}
+blc = [1.0, 3.0]
+buc = [1.0, 3.0]
+\end{lstlisting}
+que nos indica
+$$\texttt{blc[i]} \le \langle \Ab_{i0}, \Xb_{0} \rangle \le \texttt{buc[i]}, i = 0,1.$$
+
+\item Definimos los tamaños:
+\begin{lstlisting}
+numcon = len(bkc)
+BARVARDIM = [2]
+\end{lstlisting}
+donde $numcon$ es la cantidad $m$ de restricciones y $BARVARDIM$ es una lista con los tamaños de la matrice $\Xb_j$, que en nuestro caso es una sola matriz de tamaño 2.
+
+\item Finalmente, cargamos todas las matrices y restricciones en las variables apropiadas
+
+\begin{lstlisting}
+task.appendcons(numcon)
+
+# Append one symmetric variables of dimension 3 (3x3 matrix)
+task.appendbarvars(BARVARDIM)
+
+symc = task.appendsparsesymmat(BARVARDIM[0],
+                    barci,
+                    barcj,
+                    barcval)
+                    
+syma0 = task.appendsparsesymmat(BARVARDIM[0],
+                              barai[0],
+                              baraj[0],
+                              baraval[0])
+
+syma1 = task.appendsparsesymmat(BARVARDIM[0],
+                              barai[1],
+                              baraj[1],
+                              baraval[1])
+
+task.putbarcj(0, [symc], [1.0])
+task.putbaraij(0, 0, [syma0], [1.0])
+task.putbaraij(1, 0, [syma1], [1.0])
+
+for i in range(numcon):
+  # Set the bounds on constraints.
+  # blc[i] <= constraint_i <= buc[i]
+  task.putconbound(i, bkc[i], blc[i], buc[i])
+\end{lstlisting}
+
+En nuestro ejemplo no hay variables $x_j$ por lo tanto fijamos $\texttt{numvar = 0}$ y todo lo que tiene que ver con $\texttt{numvar}$, $\texttt{aval}$, $\texttt{asub}$ lo eliminamos.
+
+\item Y especificamos que queremos minimizar la función objetivo.
+
+\begin{lstlisting}
+# Input the objective sense (minimize/maximize)
+task.putobjsense(mosek.objsense.minimize)
+\end{lstlisting}
+
+\end{enumerate}
+
+
+
+
+    
+
+
+
+
+
+\section{Ejemplo 2}
+
+Calcular el menor autovalor de 
+$$\Ab = 
+\begin{pmatrix}
+6 & 2 & 2 \\
+2 & 4 & 2 \\
+2 & 2 & 2 
+\end{pmatrix}
+$$
+resolviendo el problema SDP:
+\begin{alignat*}{2}
+  & \text{maximizar: } & & \alpha \\
+  & \text{sujeto a: } & & \Ab - \alpha \Ib  \succeq 0.
+\end{alignat*}
+
+
+En este caso tenemos
+$$
+\Xb = 
+\begin{pmatrix}
+x_{00} & x_{01} & x_{02} \\
+x_{01} & x_{11} & x_{12} \\
+x_{02} & x_{12} & x_{22}
+\end{pmatrix} = \begin{pmatrix}
+6 & 2 & 2 \\
+2 & 4 & 2 \\
+2 & 2 & 2
+\end{pmatrix}
+- \begin{pmatrix}
+\alpha & 0 & 0 \\
+0 & \alpha & 0 \\
+0 & 0 & \alpha
+\end{pmatrix}
+$$
+
+Por lo tanto en el problema modelo de \url{https://docs.mosek.com/latest/pythonapi/tutorial-sdo-shared.html}, tomamos $n=1$ y $x_0 = \alpha$, siendo $x_0$ la función a maximizar.
+
+
+
+\end{document}
+
+
+\textbf{Para entregar:} entregar un ejercicio a elección entre los marcados ($\diamondsuit$).
+
+\vspace{0.5cm}
+
+\noindent \textbf{Primeros pasos en Mosek}
+
+\begin{enumerate}
+
+\item (Mosek) Calcular el menor autovalor de la matriz
+$$
+\Ab = \begin{pmatrix}
+3 & 0 & 6 \\
+0 & 0 & 1 \\
+6 & 1 & 1
+\end{pmatrix}
+$$
+resolviendo en Mosek el problema SDP
+\begin{alignat*}{2}
+  & \text{maximizar: } & & \eta \\
+  & \text{sujeto a: } & \quad & \Ab - \eta I  \succeq 0.
+\end{alignat*}
+
+\item (Mosek)
+Vimos en la primera clase que para determinar si 
+$$f(x) = 10x^4+2x^3+27x^2-24x+5 \ge 0$$
+ para todo $x \in \R$ tenemos que determinar si existe $\Ab \in \R^{3 \times 3}$ tal que
+\begin{align*}
+&a_{11} = 5, \quad 2a_{12} = -24, \quad 2a_{13} + a_{22} = 27, \quad 2a_{23} = 2, \quad a_{33} = 10, \\
+&\Ab \succeq 0.
+\end{align*}
+
+Resolver en Mosek este problema SDP, calculando el máximo de $a_{22}$ sujeto a las restricciones dadas.
+
+\end{enumerate}
+
+\noindent \textbf{Matrices simétricas}
+\begin{enumerate}[resume]
+
+\item
+Dada una matriz simétrica $\Ab \in \Rnn$, probar
+\begin{enumerate}
+\item $\Ab^n$ es simétrica para todo $n \in \N$.
+\item $\Ab^{-1}$ es simétrica.
+\item Si $\Bb \in \Rnn$ es simétrica, $\Ab\Bb$ es simétrica si y solo si $\Ab$ y $\Bb$ conmutan ($\Ab\Bb = \Bb\Ab$).
+\end{enumerate}
+
+\item Para el producto interno usual $\inner{\xb}{\yb}$ de $\Rnn$, probar que una matriz $\Ab \in \Rnn$ es simétrica si y solo si
+$$
+\inner{\Ab \xb}{\yb} = \inner{\xb}{\Ab \yb}
+$$
+para todo $\xb, \yb \in \R^n$.
+
+\item Dada $\Ab \in \Rnn$ simétrica con $\{\ub_1, \dots, \ub_n\}$ base ortonormal de autovectores correspondiente a los autovalores $\{\lambda_1, \dots, \lambda_n\}$, probar que
+$$
+\Ab = \sum_{i=1}^n \lambda_i \ub_i \ub_i^T.
+$$
+
+\item (Resolver a mano o en Python) Para la matriz
+$$
+\Ab = \begin{pmatrix}
+3 & 2 & 4 \\
+2 & 0 & 2 \\
+4 & 2 & 0
+\end{pmatrix},
+$$
+\begin{enumerate}
+\item Hallar una factorización $\Ab = \Ub \Db \Ub^T$ con $\Ub$ ortogonal y $\Db$ diagonal.
+\item Hallar mediante diagonalización simultánea de filas y columnas una matriz $\Bb \in \Q^{3 \times 3}$ diagonal congruente a $\Ab$. Determinar una matriz $\Sb$ tal que $\Sb \Ab \Sb^T = \Bb$.
+\item Verificar que las matrices $\Db$ y $\Bb$ halladas tienen la misma signatura.
+\item Escribir a la matriz $\Ab$ como suma de matrices simétricas de rango 1.
+\end{enumerate}
+
+
+
+\end{enumerate}
+
+\noindent \textbf{Matrices definidas positivas}
+
+\begin{enumerate}[resume]
+\item
+Dadas matrices simétricas $\Ab \in \Rn$, $\Bb \in \Rm$, definimos la matriz $\Ab \oplus \Bb$ por
+$$
+\Ab \oplus \Bb =
+\begin{pmatrix}
+\Ab & 0 \\
+0 & \Bb
+\end{pmatrix}.
+$$
+
+Probar que $\Ab \succeq 0$ y $\Bb \succeq 0$ si y solo si $\Ab \oplus \Bb \succeq 0$.
+
+\item Si $\Ab \in \Rn$ es semidefinida positiva y $a_{ii} = 0$, probar que $a_{ij} = 0 = a_{ji}$ para todo $j = 1, \dots, n$.
+
+\item Probar que una matriz semidefinida positiva $\Ab \in \Rnn$ tiene rango 1 si y solo si
+$$\Ab = \xb \xb^T$$
+para algún vector $\xb \in \Rn$.
+
+\item Sea $\Ab \in \Rn$ una matrix semidefinida positiva y $\xb \in \Rn$. Probar que
+$$
+\xb^T \Ab \xb = 0 \iff \Ab \xb = 0.
+$$
+
+\item (Complemento de Schur.) Sea $\Xb$ una matriz simétrica definida por bloques
+$$
+\Xb = \begin{pmatrix}
+\Ab & \Bb \\
+\Bb^T & \Cb
+\end{pmatrix}
+$$
+con $\Ab \in \R^{m \times m}$, $\Bb \in \R^{m \times n}$ y $\Cb \in \Rnn$, con $\Ab$ no-singular. Probar que
+$$
+\Xb \succeq 0 \iff  \Cb - \Bb^T \Ab^{-1} \Bb \succeq 0.
+$$
+
+Sugerencia: probar que
+$$
+\Xb = \Pb^T \begin{pmatrix}
+\Ab & 0 \\
+0 & \Cb - \Bb^T \Ab^{-1} \Bb
+\end{pmatrix}, \text{ con }
+\Pb = \begin{pmatrix}
+\Ib & \Ab^{-1} \Bb \\
+0 & \Ib
+\end{pmatrix}.
+$$
+
+\item Para las matrices
+$$
+\Ab = \begin{pmatrix}
+13 & 1 & 6 \\
+ 1 & 2 & 2 \\
+ 6 & 2 & 4
+ \end{pmatrix},
+\quad \quad
+\Bb = \begin{pmatrix}
+3 & 2 & 4 \\
+2 & 0 & 2 \\
+4 & 2 & 3
+\end{pmatrix},
+\quad \quad
+\Cb = \begin{pmatrix}
+ 9 & -3 & 6 \\
+ -3 &  2 & -2 \\
+ 6 & -2 & 5
+ \end{pmatrix}
+ $$
+\begin{enumerate}
+\item Determinar cuáles son semidefinidas positivas y encontrar una factorización $\Mb \Mb^t$ para las que lo sean.
+\item Determinar cuáles son definidas positivas y calcular la factorización de Cholesky para las que lo sean.
+\end{enumerate}
+
+\end{enumerate}
+\pagebreak
+
+\noindent \textbf{Conos y espectrahedros}
+\begin{enumerate}[resume]
+\item Probar que el conjunto
+$$
+\mathcal{L}^{n+1} = \left\{ (\xb, t) \in \Rn \times \R : \|x\|_2 =\sqrt{x_1^2 + \dots + x_n^2} \le t \right\}
+$$
+es un cono y determinar si es puntiagudo.
+
+Realizar un gráfico aproximado de $\mathcal{L}^{3}$.
+
+\item Graficar en $\R^2$ el espectrahedro dado por
+$$S =
+\left\{
+(y_1, y_2) \in \R^2 \mid
+\begin{pmatrix}
+0 & 0 \\
+0 & 1
+\end{pmatrix}
++
+y_1 \begin{pmatrix}
+1 & 0 \\
+0 & -1
+\end{pmatrix}
++
+y_2 \begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix}
+\succeq 0 \right\}
+$$
+
+\item Graficar en $\R^2$ el espectrahedro dado por
+$$S =
+\left\{
+(x, y) \in \R^2 \mid
+\begin{pmatrix}
+ x & 1 \\ 1 & y
+\end{pmatrix} \succeq 0\right\}.
+$$
+
+\item ¿A qué objeto geométrico corresponde el espectrahedro en $\R^3$ dado por
+$$S =
+\left\{
+(x, y, z) \in \R^3 \mid
+\begin{pmatrix}
+ 1 + x & y & 0 & 0  \\
+ y & 1-x & 0 & 0 \\
+ 0 & 0 & 1+z & 0 \\
+ 0 & 0 & 0 & 1-z
+\end{pmatrix} \succeq 0\right\}?
+$$
+
+\item Ingresar el siguiente código en Python para realizar el gráfico de una curva dada en forma implícita.
+\begin{lstlisting}
+from sympy import var, plot_implicit
+var('x y')
+plot_implicit(x**2 + x**3 - y**2)
+\end{lstlisting}
+
+\item ($\diamondsuit$) Considerar el espectrahedro en $\R^2$ dado por
+$$S =
+\left\{
+(x,y) \in \R^2 \mid \Ab(x,y) = \begin{pmatrix}
+x+1 & 0 & y \\
+0 & 2 & -x-1 \\
+y & -x-1 2
+\end{pmatrix}\succeq 0
+\right\}
+$$
+
+\begin{enumerate}
+\item Calcular el determinante de $\Ab(x,y)$ y el polinomio característico.
+\item Graficar en Python las soluciones de $\det(\Ab(x,y)) = 0$.
+\item Determinar el gráfico del espectrahedro $S$.
+\end{enumerate}
+
+\item ($\diamondsuit$) Graficar (con la ayuda de Python) el espectrahdro en $\R^2$ dado por
+$$S =
+\left\{
+(x,y) \in \R^2 \mid \Ab(x,y) = \begin{pmatrix}
+1 & x & x+y \\
+x & 1 & y \\
+x+y & y & 1
+\end{pmatrix} \succeq 0
+\right\}
+$$
+
+\end{enumerate}
+
+\noindent \textbf{Problemas de programación semidefinida}
+
+\begin{enumerate}[resume]
+
+\item Resolver (a mano) el problema
+\begin{alignat*}{2}
+  & \text{minimizar: } & & x_{11} \\
+  & \text{sujeto a: } & \quad &
+  \begin{pmatrix} x_{11} & 1 \\ 1 & x_{22} \end{pmatrix}.
+\end{alignat*}
+
+¿Se alcanza el ínfimo hallado?
+
+\pagebreak
+\item ($\diamondsuit$) Resolver (a mano o en Mosek) los problemas SDP
+\begin{multicols}{2}
+\noindent
+\begin{alignat*}{2}
+  & \text{minimizar: } & & y \\
+  & \text{sujeto a: } & \quad & 
+\begin{pmatrix}
+5 & -12 & y \\
+-12 & 27 - 2y & 1 \\
+y & 1 & 10 \\
+\end{pmatrix}
+\end{alignat*}
+\begin{alignat*}{2}
+  & \text{maximizar: } & & y \\
+  & \text{sujeto a: } & \quad &
+\begin{pmatrix}
+5 & -12 & y \\
+-12 & 27 - 2y & 1 \\
+y & 1 & 10 \\
+\end{pmatrix}
+\end{alignat*}
+\end{multicols}
+
+A partir de los resultados hallados, determinar el espectrahedro del conjunto factible.
+
+\item ($\diamondsuit$) Para el problema SDP primal:
+\begin{alignat*}{2}
+  & \text{minimizar: } & & 2x_{11} + 2x_{12} \\
+  & \text{sujeto a: } & \quad & x_{11} + x_{22} = 1, \\
+  & & & \begin{pmatrix} x_{11} & x_{12} \\ x_{12} & x_{22}  \end{pmatrix} \succeq 0.
+\end{alignat*}
+\begin{enumerate}
+\item Resolver el problema.
+\item Plantear el problema dual.
+\item Resolver el problema dual y calcular el salto de dualidad.
+\end{enumerate}
+
+\item Resolver el par de problemas SDP primal/dual y calcular el salto de dualidad.
+\begin{multicols}{2}
+\noindent
+\begin{alignat*}{2}
+  & \text{minimizar: } & & \alpha x_{11} \\
+  & \text{sujeto a: } & \quad & x_{22} = 0, \\
+  & & \quad & x_{11} + 2x_{23} = 1, \\
+  & & \quad & \Xb \in \R^{3 \times 3} \succeq 0.
+\end{alignat*}
+\begin{alignat*}{2}
+  & \text{maximizar: } & & y_2 \\
+  & \text{sujeto a: } & & \begin{pmatrix} y_2 & 0 & 0 \\ 0 & y_1 & y_2 \\ 0 & y_2 & 0  \end{pmatrix} \preceq \begin{pmatrix} \alpha & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix}.
+\end{alignat*}
+\end{multicols}
+
+\item Considerar el par de problemas SDP primal/dual:
+\begin{multicols}{2}
+\noindent
+\begin{alignat*}{2}
+  & \text{minimizar: } & & x_{11} \\
+  & \text{sujeto a: } & \quad & 2x_{12} = 1, \\
+  & & & \begin{pmatrix} x_{11} & x_{12} \\ x_{12} & x_{22}  \end{pmatrix} \succeq 0.
+\end{alignat*}
+\begin{alignat*}{2}
+  & \text{maximizar: } & & y \\
+  & \text{sujeto a: } & & \begin{pmatrix} 0 & y \\ y & 0  \end{pmatrix} \succeq \begin{pmatrix} 1 & 0 \\ 0 & 0  \end{pmatrix}.
+\end{alignat*}
+\end{multicols}
+
+\begin{enumerate}
+\item Resolver ambos problemas y calcular el salto de dualidad.
+\item ¿Se alcanza el óptimo en ambos problemas?
+\end{enumerate}
+
+\end{enumerate}
+
+\end{document}
