@@ -1,10 +1,16 @@
 \documentclass{book}
 
-\usepackage{fancyhdr}
-\usepackage[utf8]{inputenc}
-\usepackage[spanish,es-nodecimaldot]{babel}
+\vsize=27.9cm \hsize=21cm \setlength{\textwidth}{16cm}
+\setlength{\textheight}{21.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+%\setlength{\topmargin}{-1.5cm}
+\parskip 5pt
 
-\usepackage{dsfont}
+
+%\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot,es-lcroman]{babel}
 
 \usepackage{ifxetex}
 \usepackage{ifpdf}
@@ -18,13 +24,6 @@
 \newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
 \newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
 
-
-\vsize=27.9cm \hsize=21cm \setlength{\textwidth}{16cm}
-\setlength{\textheight}{21.5cm}
-\setlength{\oddsidemargin}{0.0cm}
-\setlength{\evensidemargin}{0.0cm}
-%\setlength{\topmargin}{-1.5cm}
-\parskip 5pt
 
 %%%%%%%%%%%%% Packages %%%%%%%%%%%%%%%%%
 \usepackage{amssymb, amsthm,amsmath}
@@ -46,17 +45,13 @@
 \graphicspath{ {../imagenes/} }
 
 \usepackage{enumitem}
-\setenumerate[0]{label=(\alph*)}
+%\setenumerate[0]{label=(\alph*)}
+\setenumerate[1]{label=(\alph*)}
+\setenumerate[2]{label=\roman*.}
 
 \usepackage{caption}
 \usepackage{soul, color}
 
-\usepackage{listings}
-\lstset{
-  frame=single,
-  breaklines=true,
-  basicstyle=\fontsize{7}{13}\selectfont\ttfamily
-}
 
 %%%%%%%%%%%% algo and keywords %%%%%%%
 \usepackage[ruled]{algorithm2e}
