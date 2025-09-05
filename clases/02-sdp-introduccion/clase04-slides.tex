@@ -152,7 +152,7 @@ Cualquier matriz simétrica $\Ab \in \Symn$ admite una descomposición
 $$
 \Ab = \Ub \Db \Ub^T,
 $$
-con $\Ub \in \Rnn$ matriz ortogonal y $\Db \in \Rnn$ matriz diagonal, con los autovalores $\{\lambda_1, \dots, \lambda_n\} \subset \R$ de $\Ab$ en la diagonal. 
+con $\Ub \in \Rnn$ matriz ortogonal y $\Db \in \Rnn$ matriz diagonal, con los autovalores $\{\lambda_1, \dots, \lambda_n\} \subset \R$ de $\Ab$ en la diagonal.
 %Equivalentemente,
 %$$
 %\Ab = \sum_{i=1}^n \lambda_i u_i u_i^T,
@@ -193,12 +193,12 @@ La relación de congruencia es una relación de equivalencia.
 \begin{frame}
 \frametitle{Signatura de una matriz}
 
-Dada una matriz simétrica $\Ab \in \Symn$ definimos la \emph{signatura} de $\Ab$ como la terna 
+Dada una matriz simétrica $\Ab \in \Symn$ definimos la \emph{signatura} de $\Ab$ como la terna
 $$(n_+, n_-, n_0),$$
-donde 
+donde
 \begin{itemize}
-\item $n_+$ la cantidad de autovalores positivos de $\Ab$, 
-\item $n_-$ la cantidad de autovalores negativos, 
+\item $n_+$ la cantidad de autovalores positivos de $\Ab$,
+\item $n_-$ la cantidad de autovalores negativos,
 \item $n_0$ es la cantidad de autovalores nulos.
 \end{itemize}
 
@@ -228,7 +228,7 @@ $$
   &        &   &    &        &    &   &        & 0 \\
 \end{pmatrix}
 \Db.$$
-  
+
 \end{frame}
 
 %------------------------------------------------------------------
@@ -308,18 +308,18 @@ En particular, cualquier matriz simétrica es congruente a una matriz diagonal c
 \begin{frame}
 \frametitle{Diagonalización por congruencia}
 
-Dada una matriz simétrica $\Ab \in \Symn$ podemos obtener una matriz diagonal $\Db$ congruente a $\Ab$ por eliminación gaussiana (realizando simultáneamente eliminación en filas y columnas). 
+Dada una matriz simétrica $\Ab \in \Symn$ podemos obtener una matriz diagonal $\Db$ congruente a $\Ab$ por eliminación gaussiana (realizando simultáneamente eliminación en filas y columnas).
 
 Por lo tanto, podemos calcular eficientemente tanto la diagonalización por congruencia como la signatura de la matriz.
 
 \begin{example}
-Calcular una matriz $\Db$ diagonal que sea congruente a 
+Calcular una matriz $\Db$ diagonal que sea congruente a
 $$
-\Ab = 
+\Ab =
 \begin{pmatrix}
 3 & 0 & 6 \\
 0 & 0 & 1 \\
-6 & 1 & 1 
+6 & 1 & 1
 \end{pmatrix}.
 $$
 Calcular los autovalores de $\Ab$ y verificar la ley de inercia.
@@ -396,11 +396,11 @@ Si $S = \{1, 2, \dots, k\}$, decimos que el menor asociado es un \emph{menor pri
 
 En el caso de matrices definidas positivas, podemos restringir la condición (\ref{menoresprincipales}) a considerar solo los menores principales de cabeza.
 
-\textbf{Idea de la demostración.} Usamos que para una matriz simétrica $\Ab$, los autovalores de 
+\textbf{Idea de la demostración.} Usamos que para una matriz simétrica $\Ab$, los autovalores de
 $$
-\hat \Ab = \begin{pmatrix} 
+\hat \Ab = \begin{pmatrix}
 \Ab & \yb \\
-\yb^T & a 
+\yb^T & a
 \end{pmatrix},$$
 con $\yb \in \R^n$ y $a \in \R$ están entrecruzados con los autovalores de $\Ab$ (ver \cite[Teorema 4.3.8]{Horn1985}).
 
@@ -560,215 +560,6 @@ $$\xb^T (\Ab + \Bb) \xb = \xb^T \Ab \xb + \xb^T \Bb \xb \ge 0$$
 
 \end{frame}
 
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Desplazamiento máximo}
-
-
-Recordemos que para las variables $x_i$ no-básicas,
-\begin{itemize}
-\item o bien $d_i = 1$ si es la variable que pasa a ser variable básica,
-\item o bien $d_i = 0$.
-\end{itemize}
-
-En ambos casos $d_i \ge 0$, por lo tanto podemos restringirnos a mirar las variables básicas en la fórmula anterior. Obtenemos
-\begin{equation}
-\label{eq:thetastar}
-\theta^\star = \min_{\{i = 1, \dots, m \mid d_{B(i)} < 0 \}}\left(-\frac{x_{B(i)}}{d_{B(i)}}\right).
-\end{equation}
-
-Más aún, como supusimos que todas las soluciones son no-degeneradas, $x_i > 0$ para todas las variables básicas, y por lo tanto obtenemos siempre $\theta^\star > 0$.
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Ejemplo (cont.)}
-
-Continuamos el ejemplo. Obtuvimos
-$$\xb = (1, 1, 0, 0), \quad \db = (-3/2, 1/2, 1, 0)\quad \text{ y } \quad \bar c_3 = -3.$$
-Como $\bar c_3$ es negativo, podemos disminuir el costo de la función objetivo desplazándonos en esta dirección. Es decir, consideramos los vectores
-$$
-\xb + \theta \db,
-$$
-con $\theta > 0$.
-
-La única coordenada que decrece al desplazarnos es $x_1$, por lo que si tomamos cualquier valor de $\theta > 0$ tal que la primera coordenada se mantenga no-negativa, estaremos dentro del poliedro.
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Ejemplo (cont.)}
-
-El máximo valor de $\theta$ que podemos tomar es
-$$
-\theta^\star = -\frac{x_1}{d_1} = \frac{2}{3},
-$$
-y nos desplazamos a
-$$
-\yb = \xb + \frac{2}{3} \db = \left(0, \frac{4}{3}, \frac{2}{3}, 0\right).
-$$
-
-Las columnas correspondientes a las coordenadas no-nulas son $\Ab_2 = (1, 0)$ y $\Ab_3 = (1,3)$, y son linealmente independientes. Por lo tanto $\yb$ es una nueva solución básica factible. Como queríamos minimizar el valor de $x_1$, y tenemos la restricción $x_1 \ge 0$, hemos encontrado el costo óptimo.
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Ejemplo (cont.)}
-
-Para verificación, calculamos el costo reducido $\bar c_4$ por la fórmula
-$$
-\bar c_4 = c_4 - \inner{\cb_B}{(\Bb^{-1} \Ab_4)} = 1 - \begin{pmatrix} 1 & 0 \end{pmatrix} \begin{pmatrix} 1 & 1 \\ 0 & 3 \end{pmatrix}^{-1}
-\begin{pmatrix} 1 \\ 4 \end{pmatrix} = \frac{4}{3}.
-$$
-
-Vemos que movernos en la dirección básica correspondiente va a incrementar el valor de la función objetivo y por lo tanto no debemos desplazarnos en esa dirección.
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Nueva solución básica factible}
-
-Una vez que determinamos $\theta^\star$, suponiendo que es finito, nos movemos a una nueva solución factible
-$$
-\yb = \xb + \theta^\star \db.
-$$
-
-Por la construcción que hicimos de $\db$ y $\theta^\star$, si $\ell$ es el índice que minimiza la fórmula (\ref{eq:thetastar}) de $\theta^\star$ (es decir, $\theta^\star = -x_{B(\ell)} / d_{B(\ell)}$), se cumple
-$$
-x_{B(\ell)} = 0 \quad \text{ y } \quad x_j = \theta^\star.
-$$
-
-Obtenemos que $x_j$ reemplaza a $x_{B(\ell)}$ en el conjunto de variables básicas. El nuevo conjunto de índices de las variables básicas es $\bar B = \{\bar B(1), \dots, \bar B(m)\}$, con
-$$
-\bar B(i) = \begin{cases}
-B(i), & i \neq \ell,\\
-j, &i = \ell.
-\end{cases}
-$$
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Nueva solución básica factible}
-
-Llamamos $\bar \Bb$ a la nueva matriz base, formada por las columnas de $\Ab$ correspondientes a las nuevas variables básicas.
-
-\begin{theorem}
-\begin{enumerate}
-\item Las columnas $\Ab_{B(i)}$, $i \neq \ell$, y $\Ab_j$ son linealmente independientes y, por lo tanto, $\bar \Bb$ es una matriz base.
-\item El vector $\yb = \xb + \theta^\star \db$ es una solución básica factible con matriz base asociada $\bar \Bb$.
-\end{enumerate}
-\end{theorem}
-
-\textbf{Demostración.} Ver \cite[Teorema 3.2]{Bertsimas1997}.
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Algortimo del método simplex}
-
-Mediante el procedimiento descripto, pasamos de una solución básica factible a otra solución básica factible con menor costo.
-Obtenemos la siguiente iteración del método simplex.
-
-\begin{enumerate}
-\item Comenzamos con una solución básica factible $\xb$, correspondiente a variables básicas con índices $I = \{B(1), \dots, B(m)\}$.
-\item Tomamos la submatriz $\Bb$ de $\Ab$ formada por las columnas correspondientes a las variables básicas, y calculamos los costos reducidos
-    $$\bar c_j = c_j - \inner{\cb_B}{(\Bb^{-1} \Ab_j)}, \quad j \not\in I.$$
-Si todos los costos son no-negativos, $\xb$ es una solución óptima y terminamos. Si no, elegimos algún $j$ tal que $\bar c_j < 0$.
-\saveenum
-\end{enumerate}
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Algortimo del método simplex}
-
-\begin{enumerate}
-\resume
-\item Calculamos $\ub = -\db_B = \Bb^{-1} \Ab_j$. Si $\ub$ no tiene ninguna componente positiva, tomamos $\theta^\star = \infty$, el costo óptimo es $-\infty$ y el algoritmo termina.
-\item Si alguna componente de $\ub$ es positiva, tomamos
-$$
-\theta^\star = \min_{\{i = 1, \dots, m \mid u_i > 0\}} \frac{x_{B(i)}}{u_i}.
-$$
-\item Sea $\ell$ un índice para el cuál se alcanza el mínimo. Construimos una nueva base reemplazando $B(\ell)$ por $j$. La nueva variable básica $\yb$ queda definida por
-    $$
-    \begin{cases}
-    y_j = \theta^\star, \\
-    y_{B(i)} = x_{B(i)} - \theta^\star u_i, & 1 \le i \le m, i \neq l \\
-    y_i = 0 & \text{ para los índices de variables no-básicas.}
-    \end{cases}
-    $$
-\end{enumerate}
-
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Puntos extremales y soluciones óptimas}
-
-En base a todo lo que vimos es fácil verificar que el método simplex descripto resuelve correctamente el problema de programación lineal.
-
-Completando el método para considerar soluciones degeneradas, podemos demostrar la siguiente propiedad de los problemas de programación lineal.
-
-\vspace{0.5cm}
-
-\begin{theorem}
-Consideremos el problema de programación lineal de minimizar una funcional $\inner{\cb}{\xb}$ sobre un poliedro $P$. Si $P$ tiene al menos un punto extremal entonces o bien el costo óptimo es $-\infty$ o bien existe un punto extremal que es óptimo.
-\end{theorem}
-
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Existencia de puntos extremales}
-
-En general los poliedros pueden no tener puntos extremales. Por ejemplo, un semiplano en $\R^2$ no tiene puntos extremales.
-Una condición muy simple para determinar si un poliedro tiene puntos extremales es la existencia o no de líneas rectas incluidas en el poliedro.
-
-Decimos que un poliedro $P \subset \R^n$ contiene una recta si existe un vector $\xb \in P$ y una dirección $\db \in \R^n$ tales que $\xb + \lambda \db \in P$ para todo $\lambda \in \R$.
-
-
-\end{frame}
-
-%------------------------------------------------------------------
-
-\begin{frame}
-\frametitle{Existencia de puntos extremales}
-
-\begin{theorem}
-Dado un poliedro $P = \{\xb \in \R^n \mid \inner{\ab_i}{\xb} \ge b_i, i = 1, \dots, m\}$, las siguientes condiciones son equivalentes.
-
-\begin{enumerate}
-\item El poliedro $P$ contiene al menos un punto extremal.
-\item El poliedro $P$ no contiene ninguna recta.
-\item Existen $n$ vectores linealmente independientes entre los vectores $\ab_1, \ab_2, \dots, \ab_m$.
-\end{enumerate}
-\end{theorem}
-
-\textbf{Demostración.} \cite[Teorema 2.6]{Bertsimas1997}.
-
-En particular, cualquier poliedro acotado tiene puntos extremales y cualquier poliedro en forma estándar tiene puntos extremales, debido a que el ortante positivo $\{x_i \ge 0, 1 \le i \le n\}$ no contiene ninguna recta.
-
-\end{frame}
 
 %------------------------------------------------------------------
 
