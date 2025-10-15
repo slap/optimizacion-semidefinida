@@ -1,5 +1,17 @@
 \section{Distancia euclídea}
 
+Referencias: 
+\begin{itemize}
+\item \cite[Secciones 2.2.5 Euclidean Distance Matrices y 2.2.6 Rank Minimization and Nuclear Norm]{Blekherman2013}
+
+\item Clase 19 del curso Optimization in Machine Learning por Katya Scheinberg
+
+\url{https://coral.ise.lehigh.edu/katyas/teaching/}
+\item Maximum-Margin Matrix Factorization. Nathan Srebro, Jason D. M. Rennie,  Tommi S. Jaakkola.
+
+\url{https://papers.nips.cc/paper_files/paper/2004/file/e0688d13958a19e087e123148555e4b4-Paper.pdf}
+\end{itemize}
+
 Consideramos un grafo $G = (N, E)$ con nodos $N = \{1, \dots, n\}$, aristas $E \subset N \times N$, y pesos no negativos $D = \{d_{ij}\} \in \R_+^E$, que representan distancias entre los nodos.
 
 Decimos que $(G, D)$ es $k$-realizable si podemos ubicar los nodos de $G$ en puntos $\vb_1, \dots, \vb_n \in \R^k$ de forma tal que las distancias euclídeas entre los nodos respeten las longitudes dadas:
