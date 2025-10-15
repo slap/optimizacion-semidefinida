@@ -61,7 +61,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 
-\graphicspath{ {../../images} }
+\graphicspath{ {../../imagenes} }
 \input{../../latex/preamble}
 
 \pagestyle{empty}
@@ -314,7 +314,7 @@ donde la matriz $\Xb \in \R^{m \times n}$ es la variable de decisión, y $\mathc
 \end{minipage}
 \begin{minipage}[t]{0.3\textwidth}
 \begin{center}
-\includegraphics[scale=.6]{rank_netflix.jpg}
+\includegraphics[scale=.6]{rank_netflix.png}
 \end{center}
 \end{minipage}
 
@@ -388,9 +388,9 @@ Comparando las curvas de nivel distintas normas, vemos que minimizando la norma-
 
 Para analizar las propiedades de la norma nuclear, recordemos las siguientes propiedades:
 \begin{itemize}
-\item Para $\Ab, \Bb \in \R^{m \times n}$, 
-$$\innerTrace{\Ab}{\Bb} = \tr(\Ab^T \Bb)= \tr(\Ab \Bb^T)$$ 
-es un producto interno en $\R^{n \times n}$, que define la norma 
+\item Para $\Ab, \Bb \in \R^{m \times n}$,
+$$\innerTrace{\Ab}{\Bb} = \tr(\Ab^T \Bb)= \tr(\Ab \Bb^T)$$
+es un producto interno en $\R^{n \times n}$, que define la norma
 $$\|\Ab\|_F = \sqrt{\innerTrace{\Ab}{\Ab}} = \sqrt{\Tr(\Ab \Ab^T)}.$$
 
 Si $\Xb = \Ab \Ab^T$, $\Tr(\Xb) = \|\Ab\|_F^2$.
@@ -406,7 +406,7 @@ Si $\Xb = \Ab \Ab^T$, $\Tr(\Xb) = \|\Ab\|_F^2$.
 \frametitle{Norma nuclear}
 
 \begin{lemma}
-Para $\Xb \in \R^{n \times n}$, 
+Para $\Xb \in \R^{n \times n}$,
 $$
 \|\Xb\|_* = \min_{\Xb = \Ub \Vb^T} \|\Ub\|_{F} \|\Vb\|_{F} = \min_{\Xb = \Ub \Vb^T} \frac{1}{2}(\|\Ub\|^2 + \|\Vb\|^2).
  $$
@@ -414,8 +414,8 @@ $$
 
 {\small Este y los siguientes resultados valen también para $\Xb$ rectangular.}
 
-\textbf{Demostración.} Tomamos una descomposición SVD de $\Xb$, 
-$$\Xb = \Pb \Sb \Qb^T,$$ 
+\textbf{Demostración.} Tomamos una descomposición SVD de $\Xb$,
+$$\Xb = \Pb \Sb \Qb^T,$$
 con $\Pb \in \R^{n \times n}$ unitaria, $\Sb \in \R^{n \times n}$ diagonal, con los valores singulares $\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_n \ge 0$ en la diagonal y $\Qb \in \R^{n \times n}$ unitaria.
 
 \end{frame}
